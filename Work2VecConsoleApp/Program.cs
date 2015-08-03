@@ -108,7 +108,12 @@ namespace Work2VecConsoleApp
                 string text = Console.ReadLine();
                 if(text == null || text.ToLower().Equals("exit"))
                     break;
-                distance.Search(text);
+                var result  = distance.Search(text);
+                Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
+                foreach (var bestWord in result)
+                {
+                    Console.WriteLine("{0}\t\t{1}\n", bestWord.Word, bestWord.Distance);
+                }
             }
         }
 

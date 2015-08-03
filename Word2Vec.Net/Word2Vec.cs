@@ -810,10 +810,15 @@ namespace Word2Vec.Net
                             for (int a = 0; a < _vocabSize; a++)
                             {
                                 //fprintf(fo, "%s ", vocab[a].word);
-
+                                //textWriter.Write(String.Concat(_vocab[a].Word, " "));
+                                
                                 if (_binary > 0)
                                 {
-                                    binaryWriter.Write(Encoding.UTF8.GetBytes(string.Concat(_vocab[a].Word, " ")));
+                                    //binaryWriter.Write(Encoding.UTF8.GetBytes(string.Concat(_vocab[a].Word, " ")));
+                                    //binaryWriter.Write(_vocab[a].Word + " ");
+                                    foreach (char t in _vocab[a].Word)
+                                        binaryWriter.Write(t);
+                                    binaryWriter.Write(' ');
                                     for (b = 0; b < _layer1Size; b++)
                                         binaryWriter.Write(BitConverter.GetBytes(_syn0[a*_layer1Size + b]));
                                     binaryWriter.Write('\n');
