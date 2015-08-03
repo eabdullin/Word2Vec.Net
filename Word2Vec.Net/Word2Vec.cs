@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -292,7 +293,7 @@ namespace Word2Vec.Net
 
             var d = 1e15;
             for (a = 0; a < _vocabSize; a++) count[a] = _vocab[a].Cn;
-            for (a = _vocabSize; a < _vocabSize*2; a++) count[a] = (int) d;
+            for (a = _vocabSize; a < _vocabSize*2; a++) count[a] = (long) d;
             pos1 = _vocabSize - 1;
             pos2 = _vocabSize;
             // Following algorithm constructs the Huffman tree by adding one node at a time
@@ -406,6 +407,7 @@ namespace Word2Vec.Net
                         Console.WriteLine("Words in train file: {0}", _trainWords);
                     }
                     //file_size = ftell(fin);
+                    _fileSize = new FileInfo(_trainFile).Length;
                 }
             }
         }
@@ -519,14 +521,14 @@ namespace Word2Vec.Net
             long word_count = 0, last_word_count = 0;
             var sen = new long[MAX_SENTENCE_LENGTH + 1];
             long l1, l2, c, target, label, local_iter = _iter;
-            int id = (int) idObject;
+            int id = (Int32) idObject;
             long next_random = id;
             double f, g;
             DateTime now;
             var neu1 = new double[_layer1Size];
             var neu1e = new double[_layer1Size];
             //FILE *fi = fopen(train_file, "rb");
-            using (var stream = new FileStream(_trainFile, FileMode.Open))
+            using (var stream = File.Open(_trainFile,FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 using (var fi = new StreamReader(stream))
                 {
@@ -754,7 +756,7 @@ namespace Word2Vec.Net
 
         public void TrainModel()
         {
-            long a, b, c, d;
+            long d;
             //FILE* fo;
             //pthread_t* pt = (pthread_t*)malloc(num_threads * sizeof(pthread_t));
             Thread[] pt = new Thread[_numThreads];
@@ -766,102 +768,112 @@ namespace Word2Vec.Net
             else 
                 LearnVocabFromTrainFile();
             if (!string.IsNullOrEmpty(_saveVocabFile)) SaveVocab();
-            if (string.IsNullOrEmpty(_saveVocabFile)) return;
+            if (string.IsNullOrEmpty(_outputFile)) return;
             InitNet();
             if (_negative > 0) InitUnigramTable();
             _start = DateTime.Now;
             //for (a = 0; a < num_threads; a++) pthread_create(&pt[a], NULL, TrainModelThread, (void*)a);
             //for (a = 0; a < num_threads; a++) pthread_join(pt[a], NULL);
-            for (a = 0; a < _numThreads; a++)
+            for (int a = 0; a < _numThreads; a++)
             {
                 pt[a] = new Thread(TrainModelThreadStart);
-                pt[a].Start(a);
+                Int32 idObject = a;
+                pt[a].Start(idObject);
             }
-            for (a = 0; a < _numThreads; a++) pt[a].Join();
+            for (int a = 0; a < _numThreads; a++) pt[a].Join();
             using (FileStream stream = new FileStream(_outputFile,FileMode.OpenOrCreate))
             {
-                using (BinaryWriter writer = new BinaryWriter(stream))
+                using (BinaryWriter binaryWriter = new BinaryWriter(stream))
                 {
-                    //fo = fopen(output_file, "wb");
-                    if (_classes == 0)
+                    using (TextWriter textWriter = new StreamWriter(stream))
                     {
-                        // Save the word vectors
-                        //fprintf(fo, "%lld %lld\n", vocab_size, layer1_size);
-                        writer.Write(string.Format("{0} {1}",_vocabSize,_layer1Size));
-                        for (a = 0; a < _vocabSize; a++)
+
+
+                        //fo = fopen(output_file, "wb");
+                        long b;
+                        if (_classes == 0)
                         {
-                            //fprintf(fo, "%s ", vocab[a].word);
-                            writer.Write(String.Concat(_vocab[a].Word," "));
-                            if (_binary > 0) 
-                                for (b = 0; b < _layer1Size; b++)
-                                    writer.Write(BitConverter.GetBytes(_syn0[a * _layer1Size + b]));
+                            // Save the word vectors
+                            //fprintf(fo, "%lld %lld\n", vocab_size, layer1_size);
+                            textWriter.Write("{0} {1}", _vocabSize, _layer1Size);
+                            for (int a = 0; a < _vocabSize; a++)
+                            {
+                                //fprintf(fo, "%s ", vocab[a].word);
+                                textWriter.Write(String.Concat(_vocab[a].Word, " "));
+                                if (_binary > 0)
+                                    for (b = 0; b < _layer1Size; b++)
+                                        binaryWriter.Write(BitConverter.GetBytes(_syn0[a*_layer1Size + b]));
                                 //fwrite(&syn0[a * layer1_size + b], sizeof(real), 1, fo);
-                            else 
-                                for (b = 0; b < _layer1Size; b++)
-                                    writer.Write(_syn0[a * _layer1Size + b]);
-                                    //fprintf(fo, "%lf ", syn0[a * layer1_size + b]);
-                            writer.Write("\n");
-                            //fprintf(fo, "\n");
+                                else
+                                    for (b = 0; b < _layer1Size; b++)
+                                        textWriter.Write(_syn0[a*_layer1Size + b]);
+                                //fprintf(fo, "%lf ", syn0[a * layer1_size + b]);
+                                textWriter.WriteLine();
+                                //fprintf(fo, "\n");
+                            }
                         }
-                    }
-                    else
-                    {
-                        // Run K-means on the word vectors
-                        int clcn = (int)_classes, iter = 10, closeid;
-                        int[] centcn = new int[_classes];
-                        int[] cl = new int[_vocabSize];
-                        double closev, x;
-                        double[] cent = new double[_classes * _layer1Size];
-                        for (a = 0; a < _vocabSize; a++) cl[(int)a] = (int)a % clcn;
-                        for (a = 0; a < iter; a++)
+                        else
                         {
-                            for (b = 0; b < clcn * _layer1Size; b++) cent[b] = 0;
-                            for (b = 0; b < clcn; b++) centcn[b] = 1;
-                            for (c = 0; c < _vocabSize; c++)
+                            // Run K-means on the word vectors
+                            int clcn = (int) _classes, iter = 10, closeid;
+                            int[] centcn = new int[_classes];
+                            int[] cl = new int[_vocabSize];
+                            double closev, x;
+                            double[] cent = new double[_classes*_layer1Size];
+                            for (int a = 0; a < _vocabSize; a++) cl[(int) a] = (int) a%clcn;
+                            for (int a = 0; a < iter; a++)
                             {
-                                for (d = 0; d < _layer1Size; d++) cent[_layer1Size * cl[c] + d] += _syn0[c * _layer1Size + d];
-                                centcn[cl[c]]++;
-                            }
-                            for (b = 0; b < clcn; b++)
-                            {
-                                closev = 0;
-                                for (c = 0; c < _layer1Size; c++)
+                                for (b = 0; b < clcn*_layer1Size; b++) cent[b] = 0;
+                                for (b = 0; b < clcn; b++) centcn[b] = 1;
+                                long c;
+                                for (c = 0; c < _vocabSize; c++)
                                 {
-                                    cent[_layer1Size * b + c] /= centcn[b];
-                                    closev += cent[_layer1Size * b + c] * cent[_layer1Size * b + c];
+                                    for (d = 0; d < _layer1Size; d++)
+                                        cent[_layer1Size*cl[c] + d] += _syn0[c*_layer1Size + d];
+                                    centcn[cl[c]]++;
                                 }
-                                closev = Math.Sqrt(closev);
-                                for (c = 0; c < _layer1Size; c++) cent[_layer1Size * b + c] /= closev;
-                            }
-                            for (c = 0; c < _vocabSize; c++)
-                            {
-                                closev = -10;
-                                closeid = 0;
-                                for (d = 0; d < clcn; d++)
+                                for (b = 0; b < clcn; b++)
                                 {
-                                    x = 0;
-                                    for (b = 0; b < _layer1Size; b++) x += cent[_layer1Size * d + b] * _syn0[c * _layer1Size + b];
-                                    if (x > closev)
+                                    closev = 0;
+                                    for (c = 0; c < _layer1Size; c++)
                                     {
-                                        closev = x;
-                                        closeid = (int)d;
+                                        cent[_layer1Size*b + c] /= centcn[b];
+                                        closev += cent[_layer1Size*b + c]*cent[_layer1Size*b + c];
                                     }
+                                    closev = Math.Sqrt(closev);
+                                    for (c = 0; c < _layer1Size; c++) cent[_layer1Size*b + c] /= closev;
                                 }
-                                cl[c] = closeid;
+                                for (c = 0; c < _vocabSize; c++)
+                                {
+                                    closev = -10;
+                                    closeid = 0;
+                                    for (d = 0; d < clcn; d++)
+                                    {
+                                        x = 0;
+                                        for (b = 0; b < _layer1Size; b++)
+                                            x += cent[_layer1Size*d + b]*_syn0[c*_layer1Size + b];
+                                        if (x > closev)
+                                        {
+                                            closev = x;
+                                            closeid = (int) d;
+                                        }
+                                    }
+                                    cl[c] = closeid;
+                                }
                             }
-                        }
-                        // Save the K-means classes
-                        for (a = 0; a < _vocabSize; a++)
-                            writer.Write(String.Format("{0} {1}\n", _vocab[a].Word, cl[a]));
+                            // Save the K-means classes
+                            for (int a = 0; a < _vocabSize; a++)
+                                textWriter.Write("{0} {1}\n", _vocab[a].Word, cl[a]);
                             //printf(fo, "%s %d\n", vocab[a].word, cl[a]);
-                        centcn = null;
-                        cent = null;
-                        cl = null;
-                        //free(centcn);
-                        //free(cent);
-                        //free(cl);
+                            centcn = null;
+                            cent = null;
+                            cl = null;
+                            //free(centcn);
+                            //free(cent);
+                            //free(cl);
+                        }
+                        //fclose(fo);
                     }
-                    //fclose(fo);
                 }
             }
    
