@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Distance.cs" />
     <Compile Include="VocubWord.cs" />
     <Compile Include="Word2Vec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
