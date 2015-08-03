@@ -62,40 +62,42 @@ namespace Work2VecConsoleApp
             }
             int i;
             var builder = Word2VecBuilder.Create();
-            if ((i = ArgPos("-size",  args)) > -1)
-                builder.WithSize(int.Parse(args[i + 1])); //layer1_size = atoi(args[i + 1]);
+
             if ((i = ArgPos("-train",  args)) > -1)
-                builder.WithTrainFile(args[i + 1]); //strcpy(train_file, args[i + 1]);
+                builder.WithTrainFile(args[i + 1]);
+            if ((i = ArgPos("-output", args)) > -1)
+                builder.WithOutputFile(args[i + 1]);
+            if ((i = ArgPos("-size", args)) > -1)
+                builder.WithSize(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-save-vocab",  args)) > -1)
-                builder.WithSaveVocubFile(args[i + 1]); //strcpy(save_vocab_file, args[i + 1]);
+                builder.WithSaveVocubFile(args[i + 1]); 
             if ((i = ArgPos("-read-vocab",  args)) > -1)
-                builder.WithReadVocubFile(args[i + 1]); //strcpy(read_vocab_file, args[i + 1]);
+                builder.WithReadVocubFile(args[i + 1]); 
             if ((i = ArgPos("-debug",  args)) > -1)
-                builder.WithDebug(int.Parse(args[i + 1])); //debug_mode = atoi(args[i + 1]);
+                builder.WithDebug(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-binary",  args)) > -1)
-                builder.WithBinary(int.Parse(args[i + 1])); // binary = atoi(args[i + 1]);
+                builder.WithBinary(int.Parse(args[i + 1]));
             if ((i = ArgPos("-cbow",  args)) > -1)
-                builder.WithCBow(int.Parse(args[i + 1])); //cbow = atoi(args[i + 1]);
+                builder.WithCBow(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-alpha",  args)) > -1)
-                builder.WithAlpha(double.Parse(args[i + 1])); // alpha = atof(args[i + 1]);
-            if ((i = ArgPos("-output",  args)) > -1)
-                builder.WithOutputFile(args[i + 1]); //strcpy(output_file, args[i + 1]);
+                builder.WithAlpha(double.Parse(args[i + 1])); 
+
             if ((i = ArgPos("-window",  args)) > -1)
-                builder.WithWindow(int.Parse(args[i + 1])); //window = atoi(args[i + 1]);
+                builder.WithWindow(int.Parse(args[i + 1]));
             if ((i = ArgPos("-sample",  args)) > -1)
-                builder.WithSample(double.Parse(args[i + 1])); //sample = atof(args[i + 1])));
+                builder.WithSample(double.Parse(args[i + 1]));
             if ((i = ArgPos("-hs",  args)) > -1)
-                builder.WithHs(int.Parse(args[i + 1])); //hs = atoi(args[i + 1]);
+                builder.WithHs(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-negative",  args)) > -1)
-                builder.WithNegative(int.Parse(args[i + 1])); //negative = atoi(args[i + 1]);
+                builder.WithNegative(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-threads",  args)) > -1)
-                builder.WithThreads(int.Parse(args[i + 1])); //num_threads = atoi(args[i + 1])));
+                builder.WithThreads(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-iter",  args)) > -1)
-                builder.WithIter(int.Parse(args[i + 1])); //iter = atoi(args[i + 1]);
+                builder.WithIter(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-min-count",  args)) > -1)
-                builder.WithMinCount(int.Parse(args[i + 1])); //min_count = atoi(args[i + 1]);
+                builder.WithMinCount(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-classes",  args)) > -1)
-                builder.WithClasses(int.Parse(args[i + 1])); //classes = atoi(args[i + 1])));;
+                builder.WithClasses(int.Parse(args[i + 1]));
             Word2Vec.Net.Word2Vec word2Vec = builder.Build();
             word2Vec.TrainModel();
         }
