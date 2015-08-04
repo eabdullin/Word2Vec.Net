@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Word2Vec.Net
 {

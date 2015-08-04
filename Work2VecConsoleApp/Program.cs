@@ -102,15 +102,27 @@ namespace Work2VecConsoleApp
             word2Vec.TrainModel();
             
             var distance = new Distance("output");
+            var analogy = new WordAnalogy("output");
             while (true)
             {
-                Console.WriteLine("Enter word or sentence (EXIT to break): ");
+                Console.WriteLine("Distance: Enter word or sentence (EXIT to break): ");
                 string text = Console.ReadLine();
                 if(text == null || text.ToLower().Equals("exit"))
                     break;
                 var result  = distance.Search(text);
                 Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
-                foreach (var bestWord in result)
+                foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
+                {
+                    Console.WriteLine("{0}\t\t{1}", bestWord.Word, bestWord.Distance);
+                }
+                Console.WriteLine();
+                Console.WriteLine("Analogy: Enter word or sentence (EXIT to break): ");
+                text = Console.ReadLine();
+                if (text == null || text.ToLower().Equals("exit"))
+                    break;
+                result = analogy.Search(text);
+                Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
+                foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
                 {
                     Console.WriteLine("{0}\t\t{1}\n", bestWord.Word, bestWord.Distance);
                 }

@@ -44,7 +44,9 @@
     <Compile Include="VocubWord.cs" />
     <Compile Include="Word2Vec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Word2VecAnalysisBase.cs" />
     <Compile Include="Word2VecBuilder.cs" />
+    <Compile Include="WordAnalogy.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
