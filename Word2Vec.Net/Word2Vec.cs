@@ -795,20 +795,41 @@ namespace Word2Vec.Net
                         {
                             // Save the word vectors
                             //fprintf(fo, "%lld %lld\n", vocab_size, layer1_size);
-                            textWriter.Write("{0} {1}", _vocabSize, _layer1Size);
+                            if (_binary > 0)
+                            {
+                                //binaryWriter.Write(string.Format("{0} {1}\n", _vocabSize, _layer1Size));
+                                binaryWriter.Write(_vocabSize);
+                                binaryWriter.Write(' ');
+                                binaryWriter.Write(_layer1Size);
+                                binaryWriter.Write('\n');
+                            }
+                                
+                            else
+                                textWriter.Write("{0} {1}\n", _vocabSize, _layer1Size);
+
                             for (int a = 0; a < _vocabSize; a++)
                             {
                                 //fprintf(fo, "%s ", vocab[a].word);
-                                textWriter.Write(String.Concat(_vocab[a].Word, " "));
+
                                 if (_binary > 0)
+                                {
+                                    binaryWriter.Write(Encoding.UTF8.GetBytes(string.Concat(_vocab[a].Word, " ")));
                                     for (b = 0; b < _layer1Size; b++)
                                         binaryWriter.Write(BitConverter.GetBytes(_syn0[a*_layer1Size + b]));
+                                    binaryWriter.Write('\n');
+                                }
+
                                 //fwrite(&syn0[a * layer1_size + b], sizeof(real), 1, fo);
                                 else
+                                {
+                                    textWriter.Write(String.Concat(_vocab[a].Word, " "));
                                     for (b = 0; b < _layer1Size; b++)
-                                        textWriter.Write(_syn0[a*_layer1Size + b]);
+                                        textWriter.Write(_syn0[a * _layer1Size + b]);
+                                    textWriter.WriteLine();
+                                }
+                                    
                                 //fprintf(fo, "%lf ", syn0[a * layer1_size + b]);
-                                textWriter.WriteLine();
+                               
                                 //fprintf(fo, "\n");
                             }
                         }
@@ -863,7 +884,17 @@ namespace Word2Vec.Net
                             }
                             // Save the K-means classes
                             for (int a = 0; a < _vocabSize; a++)
-                                textWriter.Write("{0} {1}\n", _vocab[a].Word, cl[a]);
+                            {
+                                if (_binary > 0)
+                                {
+                                    binaryWriter.Write(string.Format("{0} {1}\n", _vocab[a].Word, cl[a]));
+                                }
+                                else
+                                {
+                                    textWriter.Write("{0} {1}\n", _vocab[a].Word, cl[a]);
+                                }
+                            }
+                                
                             //printf(fo, "%s %d\n", vocab[a].word, cl[a]);
                             centcn = null;
                             cent = null;
