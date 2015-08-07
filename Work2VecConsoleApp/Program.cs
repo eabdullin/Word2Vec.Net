@@ -100,16 +100,16 @@ namespace Work2VecConsoleApp
                 builder.WithClasses(int.Parse(args[i + 1]));
             Word2Vec.Net.Word2Vec word2Vec = builder.Build();
             word2Vec.TrainModel();
-            
-            var distance = new Distance("output");
-            while (true)
-            {
-                Console.WriteLine("Enter word or sentence (EXIT to break): ");
-                string text = Console.ReadLine();
-                if(text == null || text.ToLower().Equals("exit"))
-                    break;
-                distance.Search(text);
-            }
+            Console.Read();
+            //var distance = new Distance("output");
+            //while (true)
+            //{
+            //    Console.WriteLine("Enter word or sentence (EXIT to break): ");
+            //    string text = Console.ReadLine();
+            //    if(text == null || text.ToLower().Equals("exit"))
+            //        break;
+            //    distance.Search(text);
+            //}
         }
 
         private static int ArgPos(string str, string[] args)
