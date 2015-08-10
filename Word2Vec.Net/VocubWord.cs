@@ -7,7 +7,7 @@ namespace Word2Vec.Net
         public long Cn { get; set; }
         public string Word { get; set; }
         public char[] Code { get; set; }
-        public char CodeLen { get; set; }
+        public int CodeLen { get; set; }
         public int[] Point { get; set; }
     }
     // Used later for sorting by word counts

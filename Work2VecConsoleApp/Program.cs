@@ -80,12 +80,12 @@ namespace Work2VecConsoleApp
             if ((i = ArgPos("-cbow",  args)) > -1)
                 builder.WithCBow(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-alpha",  args)) > -1)
-                builder.WithAlpha(double.Parse(args[i + 1])); 
+                builder.WithAlpha(float.Parse(args[i + 1])); 
 
             if ((i = ArgPos("-window",  args)) > -1)
                 builder.WithWindow(int.Parse(args[i + 1]));
             if ((i = ArgPos("-sample",  args)) > -1)
-                builder.WithSample(double.Parse(args[i + 1]));
+                builder.WithSample(float.Parse(args[i + 1]));
             if ((i = ArgPos("-hs",  args)) > -1)
                 builder.WithHs(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-negative",  args)) > -1)
@@ -100,32 +100,32 @@ namespace Work2VecConsoleApp
                 builder.WithClasses(int.Parse(args[i + 1]));
             Word2Vec.Net.Word2Vec word2Vec = builder.Build();
             word2Vec.TrainModel();
-            
+
             var distance = new Distance("output");
-            var analogy = new WordAnalogy("output");
+            //var analogy = new WordAnalogy("output");
             while (true)
             {
                 Console.WriteLine("Distance: Enter word or sentence (EXIT to break): ");
                 string text = Console.ReadLine();
-                if(text == null || text.ToLower().Equals("exit"))
+                if (text == null || text.ToLower().Equals("exit"))
                     break;
-                var result  = distance.Search(text);
+                var result = distance.Search(text);
                 Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
                 foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
                 {
                     Console.WriteLine("{0}\t\t{1}", bestWord.Word, bestWord.Distance);
                 }
                 Console.WriteLine();
-                Console.WriteLine("Analogy: Enter word or sentence (EXIT to break): ");
-                text = Console.ReadLine();
-                if (text == null || text.ToLower().Equals("exit"))
-                    break;
-                result = analogy.Search(text);
-                Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
-                foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
-                {
-                    Console.WriteLine("{0}\t\t{1}\n", bestWord.Word, bestWord.Distance);
-                }
+                //Console.WriteLine("Analogy: Enter word or sentence (EXIT to break): ");
+                //text = Console.ReadLine();
+                //if (text == null || text.ToLower().Equals("exit"))
+                //    break;
+                //result = analogy.Search(text);
+                //Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
+                //foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
+                //{
+                //    Console.WriteLine("{0}\t\t{1}\n", bestWord.Word, bestWord.Distance);
+                //}
             }
         }
 

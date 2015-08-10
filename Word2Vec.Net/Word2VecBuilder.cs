@@ -16,16 +16,16 @@ namespace Word2Vec.Net
         private int _cbow = 1;
         private int _debugMode = 2;
         private int _minCount = 5;
-        private int _numThreads = 12;
+        private int _numThreads = 1;
         private int _layer1Size = 100;
         private long _iter = 5;
         private long _classes = 0;
-        private double _alpha = 0.025;
-        private double _sample = 1e-3;
+        private float _alpha = (float) 0.025;
+        private float _sample = (float) 1e-3;
 
         private int _hs = 0;
         private int _negative = 5;
-        private int _window;
+        private int _window = 5;
 
         private Word2VecBuilder()
         {
@@ -83,7 +83,7 @@ namespace Word2Vec.Net
             this._cbow = cbow;
             return this;
         }
-        public Word2VecBuilder WithAlpha(double alpha)
+        public Word2VecBuilder WithAlpha(float alpha)
         {
             this._alpha = alpha;
             return this;
@@ -93,7 +93,7 @@ namespace Word2Vec.Net
             this._outputFile = outputFileName;
             return this;
         }
-        public Word2VecBuilder WithSample(double sample)
+        public Word2VecBuilder WithSample(float sample)
         {
             this._sample = sample;
             return this;
