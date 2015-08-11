@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading;
 
 namespace Word2Vec.Net
 {
@@ -469,6 +470,7 @@ namespace Word2Vec.Net
         {
             long a, b;
             ulong next_random = 1;
+            
             _syn0 = new float[_vocabSize*_layer1Size];
             //a = posix_memalign((void **)&syn0, 128, (long long)vocab_size * layer1_size * sizeof(real));
             if (_syn0 == null)
@@ -520,6 +522,8 @@ namespace Word2Vec.Net
             var sen = new long[MAX_SENTENCE_LENGTH + 1];
             long l1, l2, c, target, label, local_iter = _iter;
             var id = (int) idObject;
+            Console.WriteLine("{0} started", id);
+            Thread.Sleep(100);
             long next_random = 1;
             var random = new Random(1);
             float f, g;
@@ -541,7 +545,7 @@ namespace Word2Vec.Net
                             if ((_debugMode > 1))
                             {
                                 now = DateTime.Now;
-                                Console.WriteLine("{0}Alpha: 1  Progress: {2}  Words/thread/sec:{3}  ", 13, _alpha,
+                                Console.WriteLine("{0}Alpha: {1}  Progress: {2}  Words/thread/sec:{3}  ", 13, _alpha,
                                     _wordCountActual/(float) (_iter*_trainWords + 1)*100,
                                     _wordCountActual/
                                     ((float)(now - _start).Ticks / (float)TimeSpan.TicksPerSecond * 1000));
@@ -567,7 +571,7 @@ namespace Word2Vec.Net
                                 {
                                     var ran = (Math.Sqrt(_vocab[word].Cn/(_sample*_trainWords)) + 1)*
                                               (_sample*_trainWords)/_vocab[word].Cn;
-                                    next_random = random.Next(int.MaxValue); //next_random*25214903917 + 11;
+                                    next_random = random.Next(int.MaxValue) +11 ; //next_random*25214903917 + 11;
                                     if (ran < (next_random & 0xFFFF) / (float)65536) continue;
                                 }
                                 sen[sentence_length] = word;
@@ -593,7 +597,7 @@ namespace Word2Vec.Net
                         if (word == -1) continue;
                         for (c = 0; c < _layer1Size; c++) neu1[c] = 0;
                         for (c = 0; c < _layer1Size; c++) neu1e[c] = 0;
-                        next_random = random.Next(int.MaxValue); //next_random*25214903917 + 11;
+                        next_random = random.Next(int.MaxValue) +11; //next_random*25214903917 + 11;
                         b = next_random%_window;
                         if (_cbow > 0)
                         {
@@ -643,7 +647,7 @@ namespace Word2Vec.Net
                                         else
                                         {
                                             //next_random = next_random*(unsigned long long )25214903917 + 11;
-                                            next_random = random.Next(int.MaxValue); //next_random*25214903917 + 11;
+                                            next_random = random.Next(int.MaxValue) +11 ; //next_random*25214903917 + 11;
                                             //target = _table[(next_random >> 16)%(int)TableSize];
                                             target = _table[next_random%(int) TableSize];
                                             if (target == 0) target = next_random%(_vocabSize - 1) + 1;
@@ -778,15 +782,15 @@ namespace Word2Vec.Net
             _start = DateTime.Now;
             //for (a = 0; a < num_threads; a++) pthread_create(&pt[a], NULL, TrainModelThread, (void*)a);
             //for (a = 0; a < num_threads; a++) pthread_join(pt[a], NULL);
-            TrainModelThreadStart(0);
-            //Thread[] pt = new Thread[_numThreads];
-            //for (int a = 0; a < _numThreads; a++)
-            //{
-            //    pt[a] = new Thread(TrainModelThreadStart);
-            //    Int32 idObject = a;
-            //    pt[a].Start(idObject);
-            //}
-            //for (int a = 0; a < _numThreads; a++) pt[a].Join();
+            //TrainModelThreadStart(0);
+            Thread[] pt = new Thread[_numThreads];
+            for (int a = 0; a < _numThreads; a++)
+            {
+                pt[a] = new Thread(TrainModelThreadStart);
+                Int32 idObject = a;
+                pt[a].Start(idObject);
+            }
+            for (int a = 0; a < _numThreads; a++) pt[a].Join();
             
             using (var stream = new FileStream(_outputFile, FileMode.Create,FileAccess.Write))
             {
