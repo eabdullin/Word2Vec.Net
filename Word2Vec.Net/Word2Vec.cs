@@ -790,10 +790,6 @@ namespace Word2Vec.Net
             
             using (var stream = new FileStream(_outputFile, FileMode.Create,FileAccess.Write))
             {
-                using (BinaryWriter binaryWriter = new BinaryWriter(stream))
-                {
-                     using (StreamWriter textWriter = new StreamWriter(stream))
-                    {
                         //fo = fopen(output_file, "wb");
                         long b;
                         if (_classes == 0)
@@ -802,30 +798,41 @@ namespace Word2Vec.Net
                             //fprintf(fo, "%lld %lld\n", vocab_size, layer1_size);
 
 
-                            textWriter.WriteLine("{0} {1}", _vocabSize, _layer1Size);
+                            //textWriter.WriteLine();
+                            var bytes = string.Format("{0} {1}\n", _vocabSize, _layer1Size).GetBytes();
+                            stream.Write(bytes,0, bytes.Length);
                             for (int a = 0; a < _vocabSize; a++)
                             {
-                                textWriter.Write(String.Concat(_vocab[a].Word, " "));
-                                textWriter.Flush();
+                                //textWriter.Write(String.Concat(_vocab[a].Word, " "));
+                                bytes = string.Concat(_vocab[a].Word, ' ').GetBytes();
+                                stream.Write(bytes, 0, bytes.Length);
                                 //fprintf(fo, "%s ", vocab[a].word);
                                 if (_binary > 0)
                                 {
                                     //int byteCount = BitConverter.GetBytes(_syn0[a*_layer1Size + 0]).Length;
                                     for (b = 0; b < _layer1Size; b++)
                                     {
-                                        //byte[] bytes = BitConverter.GetBytes(_syn0[a*_layer1Size + b]);
+                                        bytes = BitConverter.GetBytes(_syn0[a*_layer1Size + b]);
+                                        stream.Write(bytes, 0, bytes.Length);
                                         //if (byteCount != bytes.Length) throw new InvalidOperationException();
                                         //binaryWriter.Write(bytes);
-                                        binaryWriter.Write(_syn0[a * _layer1Size + b]);
+                                        //binaryWriter.Write(_syn0[a * _layer1Size + b]);
                                     }
-                                    binaryWriter.Flush();
-                                    
+                                    //binaryWriter.Flush();
+
                                 }
 
                                 else
+                                {
                                     for (b = 0; b < _layer1Size; b++)
-                                        textWriter.Write(String.Concat(_syn0[a*_layer1Size + b], " "));
-                                textWriter.Write('\n');
+                                    {
+                                        bytes = string.Concat(_syn0[a*_layer1Size + b], " ").GetBytes();
+                                        stream.Write(bytes, 0, bytes.Length);
+                                    }
+                                }
+                                //textWriter.Write(String.Concat(_syn0[a*_layer1Size + b], " "));
+                                bytes = "\n".GetBytes();
+                                stream.Write(bytes, 0, bytes.Length);
                                 //fprintf(fo, "\n");
                             }
 
@@ -882,7 +889,9 @@ namespace Word2Vec.Net
                             // Save the K-means classes
                             for (var a = 0; a < _vocabSize; a++)
                             {
-                                textWriter.Write("{0} {1}\n", _vocab[a].Word, cl[a]);
+                                var bytes = string.Format("{0} {1}\n", _vocab[a].Word, cl[a]).GetBytes();
+                                stream.Write(bytes, 0, bytes.Length);
+                                //textWriter.Write("{0} {1}\n", _vocab[a].Word, cl[a]);
                             }
 
                             //printf(fo, "%s %d\n", vocab[a].word, cl[a]);
@@ -894,8 +903,6 @@ namespace Word2Vec.Net
                             //free(cl);
                         }
                         //fclose(fo);
-                    }
-                }
             }
         }
     }

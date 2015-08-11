@@ -98,8 +98,8 @@ namespace Work2VecConsoleApp
                 builder.WithMinCount(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-classes",  args)) > -1)
                 builder.WithClasses(int.Parse(args[i + 1]));
-            Word2Vec.Net.Word2Vec word2Vec = builder.Build();
-            word2Vec.TrainModel();
+            //Word2Vec.Net.Word2Vec word2Vec = builder.Build();
+            //word2Vec.TrainModel();
 
             var distance = new Distance("output");
             //var analogy = new WordAnalogy("output");

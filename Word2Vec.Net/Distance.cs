@@ -37,7 +37,11 @@ namespace Word2Vec.Net
                 for (long a = 0; a < cn; a++)
                 {
 
-                    for (b = 0; b < Words; b++) if (!new string(Vocab, (int)(b * max_w), (int)max_w).Equals(st[a])) break;
+                    for (b = 0; b < Words; b++)
+                    {
+                        string word = new string(Vocab, (int) (b*max_w), (int) max_w).Replace("\0", string.Empty);;
+                        if (word.Equals(st[a])) break;
+                    }
                     if (b == Words) b = -1;
                     bi[a] = b;
                     Console.Write("\nWord: {0}  Position in vocabulary: {1}\n", st[a], bi[a]);
