@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Word2Vec.Net", "Word2Vec.Ne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Work2VecConsoleApp", "Work2VecConsoleApp\Work2VecConsoleApp.csproj", "{7724C534-6B39-4DA6-92CD-DA2155EE944C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Word2LibConsole", "Word2LibConsole\Word2LibConsole.vcxproj", "{9C719670-3571-4B68-A3DA-053B18C654A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,16 @@ Global
 		{7724C534-6B39-4DA6-92CD-DA2155EE944C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7724C534-6B39-4DA6-92CD-DA2155EE944C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7724C534-6B39-4DA6-92CD-DA2155EE944C}.Release|Win32.ActiveCfg = Release|Any CPU
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Debug|Win32.Build.0 = Debug|Win32
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Release|Any CPU.ActiveCfg = Release|Win32
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Release|Win32.ActiveCfg = Release|Win32
+		{9C719670-3571-4B68-A3DA-053B18C654A0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
