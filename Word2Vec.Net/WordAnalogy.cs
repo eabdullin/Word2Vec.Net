@@ -15,7 +15,7 @@ namespace Word2Vec.Net
         {
             BestWord[] bestWords = new BestWord[N];
             long[] bi = new long[100];
-            double[] vec = new double[max_size];
+            float[] vec = new float[max_size];
             string[] st = text.Split(' ');
             long cn = st.Length;
             long b = -1;
@@ -34,9 +34,9 @@ namespace Word2Vec.Net
             if (b == -1) return new BestWord[0];
             //Console.WriteLine("\n                                              Word              Distance\n------------------------------------------------------------------------\n");
                 for (long a = 0; a < Size; a++) vec[a] = M[a + bi[1] * Size] - M[a + bi[0] * Size] + M[a + bi[2] * Size];
-                double  len = 0;
+                float  len = 0;
                 for (long a = 0; a < Size; a++) len += vec[a] * vec[a];
-                len = Math.Sqrt(len);
+                len = (float)Math.Sqrt(len);
                 for (long a = 0; a < Size; a++) vec[a] /= len;
                 //for (long a = 0; a < N; a++) bestd[a] = 0;
                 //for (a = 0; a < N; a++) bestw[a][0] = 0;
@@ -48,7 +48,7 @@ namespace Word2Vec.Net
                     long a = 0;
                     for (b = 0; b < cn; b++) if (bi[b] == c) a = 1;
                     if (a == 1) continue;
-                    double dist = 0;
+                    float dist = 0;
                     for (a = 0; a < Size; a++) dist += vec[a] * M[a + c * Size];
                     for (a = 0; a < N; a++)
                     {

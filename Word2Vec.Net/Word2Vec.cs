@@ -472,6 +472,7 @@ namespace Word2Vec.Net
             ulong next_random = 1;
             
             _syn0 = new float[_vocabSize*_layer1Size];
+            
             //a = posix_memalign((void **)&syn0, 128, (long long)vocab_size * layer1_size * sizeof(real));
             if (_syn0 == null)
             {

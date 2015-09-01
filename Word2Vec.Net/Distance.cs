@@ -30,7 +30,7 @@ namespace Word2Vec.Net
         {
             BestWord[] bestWords = new BestWord[N];
             long[] bi = new long[100];
-            double[] vec = new double[max_size];
+            float[] vec = new float[max_size];
             string[] st = intext.Split(' ');
             int cn = st.Length;
             long b = -1;
@@ -59,9 +59,9 @@ namespace Word2Vec.Net
                     if (bi[b] == -1) continue;
                     for (long a = 0; a < Size; a++) vec[a] += M[a + bi[b] * Size];
                 }
-                double len = 0;
+                float len = 0;
                 for (long a = 0; a < Size; a++) len += vec[a] * vec[a];
-                len = Math.Sqrt(len);
+                len = (float)Math.Sqrt(len);
                 for (long a = 0; a < Size; a++) vec[a] /= len;
                 //for (a = 0; a < N; a++) bestd[a] = -1;
                 //for (a = 0; a < N; a++) bestw[a][0] = 0;
@@ -70,7 +70,7 @@ namespace Word2Vec.Net
                     long a = 0;
                     for (b = 0; b < cn; b++) if (bi[b] == c) a = 1;
                     if (a == 1) continue;
-                    double dist = 0;
+                    float dist = 0;
                     for (a = 0; a < Size; a++) dist += vec[a] * M[a + c * Size];
                     for (a = 0; a < N; a++)
                     {
@@ -103,6 +103,6 @@ namespace Word2Vec.Net
     public struct BestWord
     {
         public string Word { get; set; }
-        public double Distance { get; set; }
+        public float Distance { get; set; }
     }
 }

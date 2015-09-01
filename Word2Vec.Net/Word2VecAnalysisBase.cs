@@ -124,10 +124,10 @@ namespace Word2Vec.Net
                                 M[a + b*Size] = BitConverter.ToSingle(bytes, 0);
                             }
                             
-                            double len = 0;
+                            float len = 0;
                             for (a = 0; a < Size; a++) len += M[a + b * Size] * M[a + b * Size];
-                            len = Math.Sqrt(len);
-                            for (a = 0; a < Size; a++) M[a + b * Size] = (float)(M[a + b * Size]/len);
+                            len = (float)Math.Sqrt(len);
+                            for (a = 0; a < Size; a++) M[a + b * Size] = M[a + b * Size]/len;
                         }
             }
         }
