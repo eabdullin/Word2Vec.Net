@@ -76,7 +76,7 @@ namespace Word2Vec.Net
             _vocab = new VocubWord[_vocabMaxSize];
             _vocabHash = new int[VocabHashSize];
             _expTable = new float[EXP_TABLE_SIZE + 1];
-            for (var i = 0; i < EXP_TABLE_SIZE; i++)
+            for (int i = 0; i < EXP_TABLE_SIZE; i++)
             {
                 _expTable[i] = (float) Math.Exp((i/EXP_TABLE_SIZE*2 - 1)*MAX_EXP); // Precompute the exp() table
                 _expTable[i] = _expTable[i]/(_expTable[i] + 1); // Precompute f(x) = x / (x + 1)
@@ -273,9 +273,9 @@ namespace Word2Vec.Net
         // Frequent words will have short uniqe binary codes
         private void CreateBinaryTree()
         {
-            int b, i, min1i, min2i, pos1, pos2;
+            long b, i, min1i, min2i, pos1, pos2;
             var code = new char[MAX_CODE_LENGTH];
-            var point = new int[MAX_CODE_LENGTH];
+            var point = new long[MAX_CODE_LENGTH];
             var count = new long[_vocabSize*2 + 1];
             var binary = new long[_vocabSize*2 + 1];
             var parent_node = new int[_vocabSize*2 + 1];
@@ -343,12 +343,12 @@ namespace Word2Vec.Net
                     b = parent_node[b];
                     if (b == _vocabSize*2 - 2) break;
                 }
-                _vocab[a].CodeLen = i;
+                _vocab[a].CodeLen = (int) i;
                 _vocab[a].Point[0] = _vocabSize - 2;
                 for (b = 0; b < i; b++)
                 {
                     _vocab[a].Code[i - b - 1] = code[b];
-                    _vocab[a].Point[i - b] = point[b] - _vocabSize;
+                    _vocab[a].Point[i - b] = (int) (point[b] - _vocabSize);
                 }
             }
         }
