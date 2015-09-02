@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Distance.cs" />
     <Compile Include="StringExtension.cs" />
+    <Compile Include="Utils\Sort.cs" />
     <Compile Include="VocubWord.cs" />
     <Compile Include="Word2Vec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

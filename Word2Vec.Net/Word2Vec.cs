@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
+using Word2Vec.Net.Utils;
 
 namespace Word2Vec.Net
 {
@@ -121,8 +123,8 @@ namespace Word2Vec.Net
         // Reads a single word from a file, assuming space + tab + EOL to be word boundaries
         private string ReadWord(StreamReader fin)
         {
-            var stringBuilder = new StringBuilder();
-            var a = 0;
+            StringBuilder stringBuilder = new StringBuilder();
+            int a = 0;
             char ch;
             while (!fin.EndOfStream && (ch = (char) fin.Peek()) > -1)
             {
@@ -145,8 +147,8 @@ namespace Word2Vec.Net
         // Returns hash value of a word
         private uint GetWordHash(string word)
         {
-            var hashedValue = 3074457345618258791ul;
-            for (var i = 0; i < word.Length; i++)
+            ulong hashedValue = 3074457345618258791ul;
+            for (int i = 0; i < word.Length; i++)
             {
                 hashedValue += word[i];
                 hashedValue *= 3074457345618258799ul;
@@ -161,7 +163,7 @@ namespace Word2Vec.Net
         // Returns position of a word in the vocabulary; if the word is not found, returns -1
         private int SearchVocab(string word)
         {
-            var hash = GetWordHash(word);
+            uint hash = GetWordHash(word);
             while (true)
             {
                 if (_vocabHash[hash] == -1) return -1;
@@ -176,7 +178,7 @@ namespace Word2Vec.Net
         // Reads a word and returns its index in the vocabulary
         private int ReadWordIndex(StreamReader fin)
         {
-            var word = ReadWord(fin);
+            string word = ReadWord(fin);
             if (fin.EndOfStream) return -1;
             return SearchVocab(word);
         }
@@ -185,8 +187,6 @@ namespace Word2Vec.Net
         protected int AddWordToVocab(string word)
         {
             uint hash;
-            if (_vocab[_vocabSize] == null)
-                _vocab[_vocabSize] = new VocubWord();
             _vocab[_vocabSize].Word = word;
             _vocab[_vocabSize].Cn = 0;
             _vocabSize++;
@@ -209,19 +209,24 @@ namespace Word2Vec.Net
             int size;
             uint hash;
             // Sort the vocabulary and keep </s> at the first position
-            Array.Sort(_vocab, new VocubComparer());
-            //qsort(&vocab[1], vocab_size - 1, sizeof(struct vocab_word), VocabCompare);
 
-            for (var a = 0; a < VocabHashSize; a++) _vocabHash[a] = -1;
+            Array.Sort(_vocab, new VocubComparer());
+            //Sort.QSort(_vocab, 0, _vocabSize, new VocubComparer());
+            //qsort(&vocab[1], vocab_size - 1, sizeof(struct vocab_word), VocabCompare);
+            for (int i = 0; i < _vocabSize; i++)
+            {
+                Console.WriteLine("{0} {1}", _vocab[i].Word, _vocab[i].Cn);
+            }
+            for (int a = 0; a < VocabHashSize; a++) _vocabHash[a] = -1;
             size = _vocabSize;
             _trainWords = 0;
-            for (var a = 0; a < size; a++)
+            for (int a = 0; a < size; a++)
             {
                 // Words occuring less than min_count times will be discarded from the vocab
-                if ((_vocab[a] == null || _vocab[a].Cn < _minCount) && (a != 0))
+                if (_vocab[a].Cn < _minCount && (a != 0))
                 {
                     _vocabSize--;
-                    _vocab[a] = null;
+                    _vocab[a].Word = null;
                 }
                 else
                 {
@@ -234,7 +239,7 @@ namespace Word2Vec.Net
             }
             Array.Resize(ref _vocab, _vocabSize + 1);
             // Allocate memory for the binary tree construction
-            for (var a = 0; a < _vocabSize; a++)
+            for (int a = 0; a < _vocabSize; a++)
             {
                 _vocab[a].Code = new char[MAX_CODE_LENGTH];
                 _vocab[a].Point = new int[MAX_CODE_LENGTH];
@@ -244,9 +249,9 @@ namespace Word2Vec.Net
         // Reduces the vocabulary by removing infrequent tokens
         private void ReduceVocab()
         {
-            var b = 0;
+            int b = 0;
             uint hash;
-            for (var a = 0; a < _vocabSize; a++)
+            for (int a = 0; a < _vocabSize; a++)
             {
                 if (_vocab[a].Cn > _minReduce)
                 {
@@ -257,8 +262,8 @@ namespace Word2Vec.Net
                 else _vocab[a].Word = null;
             }
             _vocabSize = b;
-            for (var a = 0; a < VocabHashSize; a++) _vocabHash[a] = -1;
-            for (var a = 0; a < _vocabSize; a++)
+            for (int a = 0; a < VocabHashSize; a++) _vocabHash[a] = -1;
+            for (int a = 0; a < _vocabSize; a++)
             {
                 // Hash will be re-computed, as it is not actual
                 hash = GetWordHash(_vocab[a].Word);
@@ -274,11 +279,11 @@ namespace Word2Vec.Net
         private void CreateBinaryTree()
         {
             long b, i, min1i, min2i, pos1, pos2;
-            var code = new char[MAX_CODE_LENGTH];
-            var point = new long[MAX_CODE_LENGTH];
-            var count = new long[_vocabSize*2 + 1];
-            var binary = new long[_vocabSize*2 + 1];
-            var parent_node = new int[_vocabSize*2 + 1];
+            char[] code = new char[MAX_CODE_LENGTH];
+            long[] point = new long[MAX_CODE_LENGTH];
+            long[] count = new long[_vocabSize*2 + 1];
+            long[] binary = new long[_vocabSize*2 + 1];
+            int[] parent_node = new int[_vocabSize*2 + 1];
 
             var d = 1e15;
             for (var a = 0; a < _vocabSize; a++) count[a] = _vocab[a].Cn;
@@ -520,21 +525,20 @@ namespace Word2Vec.Net
         {
             long b, d, cw, word, last_word, sentence_length = 0, sentence_position = 0;
             long word_count = 0, last_word_count = 0;
-            var sen = new long[MAX_SENTENCE_LENGTH + 1];
+            long[] sen = new long[MAX_SENTENCE_LENGTH + 1];
             long l1, l2, c, target, label, local_iter = _iter;
-            var id = (int) idObject;
+            int id = (int) idObject;
             Console.WriteLine("{0} started", id);
             Thread.Sleep(100);
-            long next_random = 1;
-            var random = new Random(1);
+            ulong next_random = (ulong)id;
             float f, g;
             DateTime now;
-            var neu1 = new float[_layer1Size];
-            var neu1e = new float[_layer1Size];
+            float[] neu1 = new float[_layer1Size];
+            float[] neu1e = new float[_layer1Size];
             //FILE *fi = fopen(train_file, "rb");
-            using (var stream = File.Open(_trainFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream stream = File.Open(_trainFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                using (var fi = new StreamReader(stream))
+                using (StreamReader fi = new StreamReader(stream))
                 {
                     stream.Seek(_fileSize/_numThreads*id, SeekOrigin.Begin);
                     while (true)
@@ -570,9 +574,8 @@ namespace Word2Vec.Net
                                 // The subsampling randomly discards frequent words while keeping the ranking same
                                 if (_sample > 0)
                                 {
-                                    var ran = (Math.Sqrt(_vocab[word].Cn/(_sample*_trainWords)) + 1)*
-                                              (_sample*_trainWords)/_vocab[word].Cn;
-                                    next_random = random.Next(int.MaxValue) +11 ; //next_random*25214903917 + 11;
+                                    float ran = ((float)Math.Sqrt(_vocab[word].Cn/(_sample*_trainWords)) + 1)*(_sample*_trainWords)/_vocab[word].Cn;
+                                    next_random = next_random*25214903917 + 11;
                                     if (ran < (next_random & 0xFFFF) / (float)65536) continue;
                                 }
                                 sen[sentence_length] = word;
@@ -598,14 +601,14 @@ namespace Word2Vec.Net
                         if (word == -1) continue;
                         for (c = 0; c < _layer1Size; c++) neu1[c] = 0;
                         for (c = 0; c < _layer1Size; c++) neu1e[c] = 0;
-                        next_random = random.Next(int.MaxValue) +11; //next_random*25214903917 + 11;
-                        b = next_random%_window;
+                        next_random = next_random*25214903917 + 11;
+                        b = (long)(next_random%(ulong)_window);
                         if (_cbow > 0)
                         {
                             //train the cbow architecture
                             // in -> hidden
                             cw = 0;
-                            for (var a = b; a < _window*2 + 1 - b; a++)
+                            for (long a = b; a < _window*2 + 1 - b; a++)
                                 if (a != _window)
                                 {
                                     c = sentence_position - _window + a;
@@ -648,10 +651,10 @@ namespace Word2Vec.Net
                                         else
                                         {
                                             //next_random = next_random*(unsigned long long )25214903917 + 11;
-                                            next_random = random.Next(int.MaxValue) +11 ; //next_random*25214903917 + 11;
+                                            next_random = next_random*25214903917 + 11;
                                             //target = _table[(next_random >> 16)%(int)TableSize];
-                                            target = _table[next_random%(int) TableSize];
-                                            if (target == 0) target = next_random%(_vocabSize - 1) + 1;
+                                            target = _table[(next_random >> 16) % (int)TableSize];
+                                            if (target == 0) target = (long)(next_random%(ulong)(_vocabSize - 1) + 1);
                                             if (target == word) continue;
                                             label = 0;
                                         }
@@ -667,7 +670,7 @@ namespace Word2Vec.Net
                                         for (c = 0; c < _layer1Size; c++) _syn1Neg[c + l2] += g*neu1[c];
                                     }
                                 // hidden -> in
-                                for (var a = b; a < _window*2 + 1 - b; a++)
+                                for (long a = b; a < _window*2 + 1 - b; a++)
                                     if (a != _window)
                                     {
                                         c = sentence_position - _window + a;
@@ -682,7 +685,7 @@ namespace Word2Vec.Net
                         else
                         {
                             //train skip-gram
-                            for (var a = b; a < _window*2 + 1 - b; a++)
+                            for (long a = b; a < _window*2 + 1 - b; a++)
                                 if (a != _window)
                                 {
                                     c = sentence_position - _window + a;
@@ -723,10 +726,9 @@ namespace Word2Vec.Net
                                             {
 //                                                next_random = next_random*(unsigned long long ) 25214903917 + 11;
 //                                                target = table[(next_random >> 16)%table_size];
-                                                next_random = random.Next(int.MaxValue);
-                                                    //next_random*((long )25214903917 + 11);
-                                                target = _table[next_random%(int) TableSize];
-                                                if (target == 0) target = next_random%(_vocabSize - 1) + 1;
+                                                next_random = next_random*25214903917 + 11;
+                                                target = _table[(next_random >> 16) % (int)TableSize];
+                                                if (target == 0) target =(long)(next_random%(ulong)(_vocabSize - 1) + 1);
                                                 if (target == word) continue;
                                                 label = 0;
                                             }
@@ -793,7 +795,7 @@ namespace Word2Vec.Net
             }
             for (int a = 0; a < _numThreads; a++) pt[a].Join();
             
-            using (var stream = new FileStream(_outputFile, FileMode.Create,FileAccess.Write))
+            using (FileStream stream = new FileStream(_outputFile, FileMode.Create,FileAccess.Write))
             {
                         //fo = fopen(output_file, "wb");
                         long b;
@@ -804,7 +806,7 @@ namespace Word2Vec.Net
 
 
                             //textWriter.WriteLine();
-                            var bytes = string.Format("{0} {1}\n", _vocabSize, _layer1Size).GetBytes();
+                            byte[] bytes = string.Format("{0} {1}\n", _vocabSize, _layer1Size).GetBytes();
                             stream.Write(bytes,0, bytes.Length);
                             for (int a = 0; a < _vocabSize; a++)
                             {
@@ -846,12 +848,12 @@ namespace Word2Vec.Net
                         {
                             // Run K-means on the word vectors
                             int clcn = (int) _classes, iter = 10, closeid;
-                            var centcn = new int[_classes];
-                            var cl = new int[_vocabSize];
+                            int[] centcn = new int[_classes];
+                            int[] cl = new int[_vocabSize];
                             float closev, x;
-                            var cent = new float[_classes*_layer1Size];
-                            for (var a = 0; a < _vocabSize; a++) cl[a] = a%clcn;
-                            for (var a = 0; a < iter; a++)
+                            float[] cent = new float[_classes*_layer1Size];
+                            for (int a = 0; a < _vocabSize; a++) cl[a] = a%clcn;
+                            for (int a = 0; a < iter; a++)
                             {
                                 for (b = 0; b < clcn*_layer1Size; b++) cent[b] = 0;
                                 for (b = 0; b < clcn; b++) centcn[b] = 1;
@@ -892,9 +894,9 @@ namespace Word2Vec.Net
                                 }
                             }
                             // Save the K-means classes
-                            for (var a = 0; a < _vocabSize; a++)
+                            for (int a = 0; a < _vocabSize; a++)
                             {
-                                var bytes = string.Format("{0} {1}\n", _vocab[a].Word, cl[a]).GetBytes();
+                                byte[] bytes = string.Format("{0} {1}\n", _vocab[a].Word, cl[a]).GetBytes();
                                 stream.Write(bytes, 0, bytes.Length);
                                 //textWriter.Write("{0} {1}\n", _vocab[a].Word, cl[a]);
                             }
@@ -909,7 +911,9 @@ namespace Word2Vec.Net
                         }
                         //fclose(fo);
             }
+
         }
+
     }
 }
 

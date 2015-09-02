@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Word2Vec.Net
 {
-    internal class VocubWord
+    internal struct VocubWord
     {
         public long Cn { get; set; }
         public string Word { get; set; }
@@ -15,10 +15,6 @@ namespace Word2Vec.Net
     {
         public int Compare(VocubWord x, VocubWord y)
         {
-            if (x == null && y == null)
-                return 0;
-            if (y == null) return -1;
-            if (x == null) return 1;
             return (int)(y.Cn - x.Cn );
         }
     }

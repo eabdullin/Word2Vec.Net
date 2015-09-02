@@ -142,8 +142,12 @@ void SortVocab() {
 	unsigned int hash;
 	// Sort the vocabulary and keep </s> at the first position
 	//qsort(&vocab[1], vocab_size - 1, sizeof(struct vocab_word), VocabCompare);
-	std::qsort(&vocab[1], vocab_size - 1, sizeof(struct vocab_word), VocabCompare);
 
+	std::qsort(&vocab[1], vocab_size - 1, sizeof(struct vocab_word), VocabCompare);
+	for (int i = 0; i < vocab_size; i++)
+	{
+		printf("%s %lld\n", vocab[i].word, vocab[i].cn);
+	}
 	for (a = 0; a < vocab_hash_size; a++) vocab_hash[a] = -1;
 	size = vocab_size;
 	train_words = 0;
@@ -562,8 +566,12 @@ void TrainModel() {
 	HANDLE* pt = (HANDLE *)malloc(num_threads * sizeof(HANDLE));
 	printf("Starting training using file %s\n", train_file);
 	starting_alpha = alpha;
-	if (read_vocab_file[0] != 0) ReadVocab(); else LearnVocabFromTrainFile();
-	if (save_vocab_file[0] != 0) SaveVocab();
+	if (read_vocab_file[0] != 0) 
+		ReadVocab(); 
+	else 
+		LearnVocabFromTrainFile();
+	if (save_vocab_file[0] != 0) 
+		SaveVocab();
 	if (output_file[0] == 0) return;
 	InitNet();
 	if (negative > 0) InitUnigramTable();
