@@ -244,6 +244,7 @@ namespace Word2Vec.Net
                 _vocab[a].Code = new char[MAX_CODE_LENGTH];
                 _vocab[a].Point = new int[MAX_CODE_LENGTH];
             }
+            GC.Collect();
         }
 
         // Reduces the vocabulary by removing infrequent tokens
@@ -272,6 +273,7 @@ namespace Word2Vec.Net
             }
             //fflush(stdout);
             _minReduce++;
+            GC.Collect();
         }
 
         // Create binary Huffman tree using the word counts
@@ -336,7 +338,7 @@ namespace Word2Vec.Net
                 binary[min2i] = 1;
             }
             // Now assign binary code to each vocabulary word
-            for (var a = 0; a < _vocabSize; a++)
+            for (long a = 0; a < _vocabSize; a++)
             {
                 b = a;
                 i = 0;
@@ -356,6 +358,7 @@ namespace Word2Vec.Net
                     _vocab[a].Point[i - b] = (int) (point[b] - _vocabSize);
                 }
             }
+            GC.Collect();
         }
 
         private void LearnVocabFromTrainFile()
@@ -519,6 +522,7 @@ namespace Word2Vec.Net
                     _syn0[a*_layer1Size + b] = (((next_random & 0xFFFF)/(float) 65536) - (float) 0.5)/_layer1Size;
                 }
             CreateBinaryTree();
+            GC.Collect();
         }
 
         private void TrainModelThreadStart(object idObject)
@@ -550,7 +554,7 @@ namespace Word2Vec.Net
                             if ((_debugMode > 1))
                             {
                                 now = DateTime.Now;
-                                Console.WriteLine("{0}Alpha: {1}  Progress: {2}  Words/thread/sec:{3}  ", 13, _alpha,
+                                Console.WriteLine("{0}Alpha: {1}  Progress: {2}  Words/thread/sec:{3}  ", (char)13, _alpha,
                                     _wordCountActual/(float) (_iter*_trainWords + 1)*100,
                                     _wordCountActual/
                                     ((float)(now - _start).Ticks / (float)TimeSpan.TicksPerSecond * 1000));
@@ -664,8 +668,7 @@ namespace Word2Vec.Net
                                         if (f > MAX_EXP) g = (label - 1)*_alpha;
                                         else if (f < MAX_EXP*(-1)) g = (label - 0)*_alpha;
                                         else
-                                            g = (label - _expTable[(int) ((f + MAX_EXP)*(EXP_TABLE_SIZE/MAX_EXP/2))])*
-                                                _alpha;
+                                            g = (label - _expTable[(int) ((f + MAX_EXP)*(EXP_TABLE_SIZE/MAX_EXP/2))])*_alpha;
                                         for (c = 0; c < _layer1Size; c++) neu1e[c] += g*_syn1Neg[c + l2];
                                         for (c = 0; c < _layer1Size; c++) _syn1Neg[c + l2] += g*neu1[c];
                                     }
@@ -753,9 +756,7 @@ namespace Word2Vec.Net
                             sentence_length = 0;
                         }
                     }
-                    neu1 = null;
-                    neu1e = null;
-
+                    GC.Collect();
                     //fclose(fi);
                     //free(neu1);
                     //free(neu1e);
@@ -785,15 +786,15 @@ namespace Word2Vec.Net
             _start = DateTime.Now;
             //for (a = 0; a < num_threads; a++) pthread_create(&pt[a], NULL, TrainModelThread, (void*)a);
             //for (a = 0; a < num_threads; a++) pthread_join(pt[a], NULL);
-            //TrainModelThreadStart(0);
-            Thread[] pt = new Thread[_numThreads];
-            for (int a = 0; a < _numThreads; a++)
-            {
-                pt[a] = new Thread(TrainModelThreadStart);
-                Int32 idObject = a;
-                pt[a].Start(idObject);
-            }
-            for (int a = 0; a < _numThreads; a++) pt[a].Join();
+            TrainModelThreadStart(0);
+            //Thread[] pt = new Thread[_numThreads];
+            //for (int a = 0; a < _numThreads; a++)
+            //{
+            //    pt[a] = new Thread(TrainModelThreadStart);
+            //    Int32 idObject = a;
+            //    pt[a].Start(idObject);
+            //}
+            //for (int a = 0; a < _numThreads; a++) pt[a].Join();
             
             using (FileStream stream = new FileStream(_outputFile, FileMode.Create,FileAccess.Write))
             {
@@ -908,9 +909,11 @@ namespace Word2Vec.Net
                             //free(centcn);
                             //free(cent);
                             //free(cl);
+                            GC.Collect();
                         }
                         //fclose(fo);
             }
+            GC.Collect();
 
         }
 
