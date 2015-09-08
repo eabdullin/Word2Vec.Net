@@ -1,0 +1,15 @@
+﻿<Window x:Class="Word2VecApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="427" Width="825">
+    <Grid>
+        <TextBox Name="SearchTxtBox" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="540"/>
+        <ComboBox Name="SearchTypeCmbBox" HorizontalAlignment="Left" Margin="555,11,0,0" VerticalAlignment="Top" Width="162">
+            <ComboBoxItem  Content="ComboBoxItem" HorizontalAlignment="Left" Width="160"/>
+        </ComboBox>
+        <Button Name="SearchBtn" Content="Search" HorizontalAlignment="Left" Margin="722,11,0,0" VerticalAlignment="Top" Width="85" Click="SearchBtn_Click"/>
+        <GroupBox Header="GroupBox" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Height="98" Width="797"/>
+        <ListBox Name="ResultsListBox" HorizontalAlignment="Left" Height="245" Margin="10,141,0,0" VerticalAlignment="Top" Width="797"/>
+
+    </Grid>
+</Window>

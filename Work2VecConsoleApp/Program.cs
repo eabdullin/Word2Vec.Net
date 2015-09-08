@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -101,32 +102,34 @@ namespace Work2VecConsoleApp
             //Word2Vec.Net.Word2Vec word2Vec = builder.Build();
             //word2Vec.TrainModel();
 
-            var distance = new Distance("output");
+            var distance = new Distance("result_output");
+            var result = distance.Search("үлкен");
             //var analogy = new WordAnalogy("output");
-            while (true)
-            {
-                Console.WriteLine("Distance: Enter word or sentence (EXIT to break): ");
-                string text = Console.ReadLine();
-                if (text == null || text.ToLower().Equals("exit"))
-                    break;
-                var result = distance.Search(text);
-                Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
-                foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
-                {
-                    Console.WriteLine("{0}\t\t{1}", bestWord.Word, bestWord.Distance);
-                }
-                Console.WriteLine();
-                //Console.WriteLine("Analogy: Enter word or sentence (EXIT to break): ");
-                //text = Console.ReadLine();
-                //if (text == null || text.ToLower().Equals("exit"))
-                //    break;
-                //result = analogy.Search(text);
-                //Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
-                //foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
-                //{
-                //    Console.WriteLine("{0}\t\t{1}\n", bestWord.Word, bestWord.Distance);
-                //}
-            }
+            //while (true)
+            //{
+            //    Console.WriteLine("Distance: Enter word or sentence (EXIT to break): ");
+            //    //string text = Console.ReadLine();
+            //    //if (text == null || text.ToLower().Equals("exit"))
+            //    //    break;
+            //    //var result = distance.Search(text);
+            //    var result = distance.Search("дейін");
+            //    Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
+            //    foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
+            //    {
+            //        Console.WriteLine("{0}\t\t{1}", bestWord.Word, bestWord.Distance);
+            //    }
+            //    Console.WriteLine();
+            //    //Console.WriteLine("Analogy: Enter word or sentence (EXIT to break): ");
+            //    //text = Console.ReadLine();
+            //    //if (text == null || text.ToLower().Equals("exit"))
+            //    //    break;
+            //    //result = analogy.Search(text);
+            //    //Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
+            //    //foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
+            //    //{
+            //    //    Console.WriteLine("{0}\t\t{1}\n", bestWord.Word, bestWord.Distance);
+            //    //}
+            //}
         }
 
         private static int ArgPos(string str, string[] args)

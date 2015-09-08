@@ -379,7 +379,7 @@ namespace Word2Vec.Net
                     AddWordToVocab("</s>");
                     while (true)
                     {
-                        var word = ReadWord(fin);
+                        string word = ReadWord(fin);
                         if (fin.EndOfStream) break;
                         _trainWords++;
                         if ((_debugMode > 1) && (_trainWords%100000 == 0))
