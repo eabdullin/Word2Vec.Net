@@ -49,7 +49,7 @@ namespace Word2Vec.Net
         private DateTime _start;
         private readonly int _hs;
         private readonly int _negative;
-        private const double TableSize = 1e8;
+        private const int TableSize = (int)1e8;
         private int[] _table;
 
         internal Word2Vec(
@@ -104,14 +104,14 @@ namespace Word2Vec.Net
             int a, i;
             double train_words_pow = 0;
             double d1, power = 0.75;
-            _table = new int[(int) TableSize];
+            _table = new int[TableSize];
             for (a = 0; a < _vocabSize; a++) train_words_pow += Math.Pow(_vocab[a].Cn, power);
             i = 0;
             d1 = Math.Pow(_vocab[i].Cn, power)/train_words_pow;
             for (a = 0; a < TableSize; a++)
             {
                 _table[a] = i;
-                if (a/TableSize > d1)
+                if (a/(double)TableSize > d1)
                 {
                     i++;
                     d1 += Math.Pow(_vocab[i].Cn, power)/train_words_pow;
@@ -144,21 +144,30 @@ namespace Word2Vec.Net
             return stringBuilder.ToString();
         }
 
-        // Returns hash value of a word
         private uint GetWordHash(string word)
         {
-            ulong hashedValue = 3074457345618258791ul;
-            for (int i = 0; i < word.Length; i++)
-            {
-                hashedValue += word[i];
-                hashedValue *= 3074457345618258799ul;
-            }
-            //return hashedValue;
-            //word.GetHashCode()
-            //ulong hash = word.Aggregate<char, ulong>(0, (current, t) => current*257 + t);
-            hashedValue = hashedValue%VocabHashSize;
-            return (uint) hashedValue;
+            int a;
+            ulong hash = 0;
+            for (a = 0; a < word.Length; a++) hash = hash * 257 + word[a];
+            hash = hash % VocabHashSize;
+            return (uint)hash;
         }
+
+        // Returns hash value of a word
+        //private uint GetWordHash(string word)
+        //{
+        //    ulong hashedValue = 3074457345618258791ul;
+        //    for (int i = 0; i < word.Length; i++)
+        //    {
+        //        hashedValue += word[i];
+        //        hashedValue *= 3074457345618258799ul;
+        //    }
+        //    //return hashedValue;
+        //    //word.GetHashCode()
+        //    //ulong hash = word.Aggregate<char, ulong>(0, (current, t) => current*257 + t);
+        //    hashedValue = hashedValue%VocabHashSize;
+        //    return (uint) hashedValue;
+        //}
 
         // Returns position of a word in the vocabulary; if the word is not found, returns -1
         private int SearchVocab(string word)
@@ -213,10 +222,10 @@ namespace Word2Vec.Net
             Array.Sort(_vocab, new VocubComparer());
             //Sort.QSort(_vocab, 0, _vocabSize, new VocubComparer());
             //qsort(&vocab[1], vocab_size - 1, sizeof(struct vocab_word), VocabCompare);
-            for (int i = 0; i < _vocabSize; i++)
-            {
-                Console.WriteLine("{0} {1}", _vocab[i].Word, _vocab[i].Cn);
-            }
+            //for (int i = 0; i < _vocabSize; i++)
+            //{
+            //    Console.WriteLine("{0} {1}", _vocab[i].Word, _vocab[i].Cn);
+            //}
             for (int a = 0; a < VocabHashSize; a++) _vocabHash[a] = -1;
             size = _vocabSize;
             _trainWords = 0;
@@ -287,9 +296,8 @@ namespace Word2Vec.Net
             long[] binary = new long[_vocabSize*2 + 1];
             int[] parent_node = new int[_vocabSize*2 + 1];
 
-            var d = 1e15;
             for (var a = 0; a < _vocabSize; a++) count[a] = _vocab[a].Cn;
-            for (var a = _vocabSize; a < _vocabSize*2; a++) count[a] = (long) d;
+            for (var a = _vocabSize; a < _vocabSize * 2; a++) count[a] = (long)1e15;
             pos1 = _vocabSize - 1;
             pos2 = _vocabSize;
             // Following algorithm constructs the Huffman tree by adding one node at a time
@@ -384,7 +392,7 @@ namespace Word2Vec.Net
                         _trainWords++;
                         if ((_debugMode > 1) && (_trainWords%100000 == 0))
                         {
-                            Console.WriteLine("{0} {1}", _trainWords/1000, 13);
+                            Console.Write("{0}K \r", _trainWords/1000);
                             //printf("%lldK%c", train_words / 1000, 13);
                             //fflush(stdout);
                         }
@@ -554,7 +562,7 @@ namespace Word2Vec.Net
                             if ((_debugMode > 1))
                             {
                                 now = DateTime.Now;
-                                Console.WriteLine("{0}Alpha: {1}  Progress: {2}  Words/thread/sec:{3}  ", (char)13, _alpha,
+                                Console.Write("\rAlpha: {0}  Progress: {1}  Words/thread/sec:{2}  ", _alpha,
                                     _wordCountActual/(float) (_iter*_trainWords + 1)*100,
                                     _wordCountActual/
                                     ((float)(now - _start).Ticks / (float)TimeSpan.TicksPerSecond * 1000));
@@ -564,7 +572,7 @@ namespace Word2Vec.Net
                                 //fflush(stdout);
                             }
                             _alpha = _startingAlpha*(1 - _wordCountActual/(float) (_iter*_trainWords + 1));
-                            if (_alpha < _startingAlpha*0.0001) _alpha = _startingAlpha*(float) 0.0001;
+                            if (_alpha < _startingAlpha * (float)0.0001) _alpha = _startingAlpha * (float)0.0001;
                         }
                         if (sentence_length == 0)
                         {
@@ -729,7 +737,7 @@ namespace Word2Vec.Net
                                             {
 //                                                next_random = next_random*(unsigned long long ) 25214903917 + 11;
 //                                                target = table[(next_random >> 16)%table_size];
-                                                next_random = next_random*25214903917 + 11;
+                                                next_random = next_random*(ulong)25214903917 + 11;
                                                 target = _table[(next_random >> 16) % (int)TableSize];
                                                 if (target == 0) target =(long)(next_random%(ulong)(_vocabSize - 1) + 1);
                                                 if (target == word) continue;

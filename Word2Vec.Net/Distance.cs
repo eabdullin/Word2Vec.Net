@@ -84,7 +84,7 @@ namespace Word2Vec.Net
                             }
                             bestWords[a].Distance = dist;
                             //bestd[a] = dist;
-                            bestWords[a].Word = new string(Vocab, (int)(max_w * c), (int)max_w);
+                            bestWords[a].Word = new string(Vocab, (int)(max_w * c), (int)max_w).Replace("\0",String.Empty);
                             //strcpy(bestw[a], &vocab[c * max_w]);
                             break;
                         }

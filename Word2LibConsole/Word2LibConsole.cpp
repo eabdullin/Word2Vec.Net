@@ -1037,7 +1037,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		expTable[i] = expTable[i] / (expTable[i] + 1); // Precompute f(x) = x / (x + 1)
 	}
 	TrainModel();
-	Distance(output_file);
 	return 0;
 }
 

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Word2VecApp.Properties
+namespace Word2VecTest.Properties
 {
 
 

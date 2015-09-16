@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Word2Vec.Net;
@@ -12,6 +13,7 @@ namespace Work2VecConsoleApp
     {
         static void Main(string[] args)
         {
+            HttpWebRequest request = (HttpWebRequest) WebRequest.Create("dsd");
             if (args.Length == 0)
             {
                 Console.WriteLine("WORD VECTOR estimation toolkit v 0.1c\n");
@@ -99,8 +101,8 @@ namespace Work2VecConsoleApp
                 builder.WithMinCount(int.Parse(args[i + 1])); 
             if ((i = ArgPos("-classes",  args)) > -1)
                 builder.WithClasses(int.Parse(args[i + 1]));
-            //Word2Vec.Net.Word2Vec word2Vec = builder.Build();
-            //word2Vec.TrainModel();
+            Word2Vec.Net.Word2Vec word2Vec = builder.Build();
+            word2Vec.TrainModel();
 
             var distance = new Distance("result_output");
             var result = distance.Search("үлкен");
