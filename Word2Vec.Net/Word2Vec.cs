@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Word2Vec.Net.Utils;
 
 namespace Word2Vec.Net
@@ -533,13 +534,12 @@ namespace Word2Vec.Net
             GC.Collect();
         }
 
-        private void TrainModelThreadStart(object idObject)
+        private void TrainModelThreadStart(int id)
         {
             long b, d, cw, word, last_word, sentence_length = 0, sentence_position = 0;
             long word_count = 0, last_word_count = 0;
             long[] sen = new long[MAX_SENTENCE_LENGTH + 1];
             long l1, l2, c, target, label, local_iter = _iter;
-            int id = (int) idObject;
             Console.WriteLine("{0} started", id);
             Thread.Sleep(100);
             ulong next_random = (ulong)id;
@@ -794,7 +794,8 @@ namespace Word2Vec.Net
             _start = DateTime.Now;
             //for (a = 0; a < num_threads; a++) pthread_create(&pt[a], NULL, TrainModelThread, (void*)a);
             //for (a = 0; a < num_threads; a++) pthread_join(pt[a], NULL);
-            TrainModelThreadStart(0);
+            //TrainModelThreadStart(0);
+            Parallel.For(0, _numThreads, TrainModelThreadStart);
             //Thread[] pt = new Thread[_numThreads];
             //for (int a = 0; a < _numThreads; a++)
             //{
@@ -803,7 +804,7 @@ namespace Word2Vec.Net
             //    pt[a].Start(idObject);
             //}
             //for (int a = 0; a < _numThreads; a++) pt[a].Join();
-            
+
             using (FileStream stream = new FileStream(_outputFile, FileMode.Create,FileAccess.Write))
             {
                         //fo = fopen(output_file, "wb");

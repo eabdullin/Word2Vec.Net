@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Word2Vec.Net;
 
@@ -13,7 +14,12 @@ namespace Work2VecConsoleApp
     {
         static void Main(string[] args)
         {
-
+            Parallel.For(0, 10, x =>
+            {
+                
+                Console.WriteLine("{0},{1}", Thread.CurrentThread.ManagedThreadId,x);
+            });
+            Console.ReadLine();
             //HttpWebRequest request = (HttpWebRequest) WebRequest.Create("dsd");
             //if (args.Length == 0)
             //{
