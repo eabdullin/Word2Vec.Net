@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Word2Vec.Net;
 
@@ -57,58 +60,68 @@ namespace Work2VecConsoleApp
                 Console.WriteLine("Examples:");
                 Console.WriteLine(
                     "./word2vec -train data.txt -output vec.txt -size 200 -window 5 -sample 1e-4 -negative 5 -hs 0 -binary 0 -cbow 1 -iter 3");
-                
+
                 return;
             }
             int i;
             var builder = Word2VecBuilder.Create();
-
-            if ((i = ArgPos("-train",  args)) > -1)
+            string outputFileName = String.Empty;
+            if ((i = ArgPos("-train", args)) > -1)
                 builder.WithTrainFile(args[i + 1]);
             if ((i = ArgPos("-output", args)) > -1)
-                builder.WithOutputFile(args[i + 1]);
-            if ((i = ArgPos("-size", args)) > -1)
-                builder.WithSize(int.Parse(args[i + 1])); 
-            if ((i = ArgPos("-save-vocab",  args)) > -1)
-                builder.WithSaveVocubFile(args[i + 1]); 
-            if ((i = ArgPos("-read-vocab",  args)) > -1)
-                builder.WithReadVocubFile(args[i + 1]); 
-            if ((i = ArgPos("-debug",  args)) > -1)
-                builder.WithDebug(int.Parse(args[i + 1])); 
-            if ((i = ArgPos("-binary",  args)) > -1)
-                builder.WithBinary(int.Parse(args[i + 1]));
-            if ((i = ArgPos("-cbow",  args)) > -1)
-                builder.WithCBow(int.Parse(args[i + 1])); 
-            if ((i = ArgPos("-alpha",  args)) > -1)
-                builder.WithAlpha(double.Parse(args[i + 1])); 
+            {
+                outputFileName = args[i + 1];
+                builder.WithOutputFile(outputFileName);
+            }
 
-            if ((i = ArgPos("-window",  args)) > -1)
+            if ((i = ArgPos("-size", args)) > -1)
+                builder.WithSize(int.Parse(args[i + 1]));
+            if ((i = ArgPos("-save-vocab", args)) > -1)
+                builder.WithSaveVocubFile(args[i + 1]);
+            if ((i = ArgPos("-read-vocab", args)) > -1)
+                builder.WithReadVocubFile(args[i + 1]);
+            if ((i = ArgPos("-debug", args)) > -1)
+                builder.WithDebug(int.Parse(args[i + 1]));
+            if ((i = ArgPos("-binary", args)) > -1)
+                builder.WithBinary(int.Parse(args[i + 1]));
+            if ((i = ArgPos("-cbow", args)) > -1)
+                builder.WithCBow(int.Parse(args[i + 1]));
+            if ((i = ArgPos("-alpha", args)) > -1)
+                builder.WithAlpha(float.Parse(args[i + 1]));
+
+            if ((i = ArgPos("-window", args)) > -1)
                 builder.WithWindow(int.Parse(args[i + 1]));
-            if ((i = ArgPos("-sample",  args)) > -1)
-                builder.WithSample(double.Parse(args[i + 1]));
-            if ((i = ArgPos("-hs",  args)) > -1)
-                builder.WithHs(int.Parse(args[i + 1])); 
-            if ((i = ArgPos("-negative",  args)) > -1)
-                builder.WithNegative(int.Parse(args[i + 1])); 
-            if ((i = ArgPos("-threads",  args)) > -1)
-                builder.WithThreads(int.Parse(args[i + 1])); 
-            if ((i = ArgPos("-iter",  args)) > -1)
-                builder.WithIter(int.Parse(args[i + 1])); 
-            if ((i = ArgPos("-min-count",  args)) > -1)
-                builder.WithMinCount(int.Parse(args[i + 1])); 
-            if ((i = ArgPos("-classes",  args)) > -1)
+            if ((i = ArgPos("-sample", args)) > -1)
+                builder.WithSample(float.Parse(args[i + 1]));
+            if ((i = ArgPos("-hs", args)) > -1)
+                builder.WithHs(int.Parse(args[i + 1]));
+            if ((i = ArgPos("-negative", args)) > -1)
+                builder.WithNegative(int.Parse(args[i + 1]));
+            if ((i = ArgPos("-threads", args)) > -1)
+                builder.WithThreads(int.Parse(args[i + 1]));
+            if ((i = ArgPos("-iter", args)) > -1)
+                builder.WithIter(int.Parse(args[i + 1]));
+            if ((i = ArgPos("-min-count", args)) > -1)
+                builder.WithMinCount(int.Parse(args[i + 1]));
+            if ((i = ArgPos("-classes", args)) > -1)
                 builder.WithClasses(int.Parse(args[i + 1]));
             Word2Vec.Net.Word2Vec word2Vec = builder.Build();
             word2Vec.TrainModel();
-            
-            var distance = new Distance("output");
+
+            var distance = new Distance(outputFileName);
             while (true)
             {
-                Console.WriteLine("Enter word or sentence (EXIT to break): ");
+                Console.WriteLine("Distance: Enter word or sentence (EXIT to break): ");
                 string text = Console.ReadLine();
-                if(text == null || text.ToLower().Equals("exit"))
+                if (text == null || text.ToLower().Equals("exit"))
                     break;
-                distance.Search(text);
+                var result = distance.Search(text);
+                Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
+                foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
+                {
+                    Console.WriteLine("{0}\t\t{1}", bestWord.Word, bestWord.Distance);
+                }
+                Console.WriteLine();
             }
         }
 
