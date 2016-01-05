@@ -44,39 +44,12 @@
     <Compile Include="Distance.cs" />
     <Compile Include="StringExtension.cs" />
     <Compile Include="Utils\FileStreamExtensions.cs" />
-    <Compile Include="Utils\Sort.cs" />
     <Compile Include="VocubWord.cs" />
     <Compile Include="Word2Vec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Word2VecAnalysisBase.cs" />
     <Compile Include="Word2VecBuilder.cs" />
     <Compile Include="WordAnalogy.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Word2VecLib2.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="wordvec\compute-accuracy.c" />
-    <Content Include="wordvec\distance.c" />
-    <Content Include="wordvec\hello.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="wordvec\questions-phrases.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="wordvec\questions-words.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="wordvec\README.txt" />
-    <Content Include="wordvec\word-analogy.c" />
-    <Content Include="wordvec\word2phrase.c" />
-    <Content Include="wordvec\word2vec.c" />
-    <Content Include="wordvec\word2vec.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="wordvec\LICENSE" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

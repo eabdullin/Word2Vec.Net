@@ -16,7 +16,7 @@ namespace Word2Vec.Net
         private int _cbow = 1;
         private int _debugMode = 2;
         private int _minCount = 5;
-        private int _numThreads = 1;
+        private int _numThreads = 12;
         private int _layer1Size = 100;
         private long _iter = 5;
         private long _classes = 0;

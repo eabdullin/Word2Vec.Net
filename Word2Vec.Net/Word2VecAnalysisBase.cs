@@ -87,6 +87,7 @@ namespace Word2Vec.Net
         {
             using (FileStream f = File.Open(file_name, FileMode.Open, FileAccess.Read))
             {
+                
                 //var text = ReadInt32(f);
                 //int[] data = text.Split(' ').Select(int.Parse).ToArray();
                 Words = f.ReadInt32();

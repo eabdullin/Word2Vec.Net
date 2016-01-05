@@ -16,16 +16,18 @@ namespace Word2Vec.Net
 {
     public class Distance : Word2VecAnalysisBase
     {
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName">path to binary file created by Word2Vec</param>
         public Distance(string fileName) : base(fileName)
         {
 
         }
-
-
-
-
-
+        /// <summary>
+        /// search nearest words to <param name="intext"></param>
+        /// </summary>
+        /// <returns>nearest words</returns>
         public BestWord[] Search(string intext)
         {
             BestWord[] bestWords = new BestWord[N];
@@ -63,8 +65,6 @@ namespace Word2Vec.Net
                 for (long a = 0; a < Size; a++) len += vec[a] * vec[a];
                 len = (float)Math.Sqrt(len);
                 for (long a = 0; a < Size; a++) vec[a] /= len;
-                //for (a = 0; a < N; a++) bestd[a] = -1;
-                //for (a = 0; a < N; a++) bestw[a][0] = 0;
                 for (long c = 0; c < Words; c++)
                 {
                     long a = 0;
@@ -78,21 +78,15 @@ namespace Word2Vec.Net
                         {
                             for (long d = N - 1; d > a; d--)
                             {
-                                //bestd[d] = bestd[d - 1];
-                                //strcpy(bestw[d], bestw[d - 1]);
                                 bestWords[d] = bestWords[d - 1];
                             }
                             bestWords[a].Distance = dist;
-                            //bestd[a] = dist;
-                            bestWords[a].Word = new string(Vocab, (int)(max_w * c), (int)max_w).Replace("\0",String.Empty);
-                            //strcpy(bestw[a], &vocab[c * max_w]);
+                            bestWords[a].Word = new string(Vocab, (int)(max_w * c), (int)max_w).Replace("\0",String.Empty).Trim();
                             break;
                         }
                     }
                 }
-                //for (a = 0; a < N; a++) Console.Write("{0}\t\t{1}\n", bestw[a], bestd[a]);
             return bestWords;
-
         }
 
 
