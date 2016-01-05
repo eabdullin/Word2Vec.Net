@@ -73,7 +73,7 @@ namespace Work2VecConsoleApp
                 outputFileName = args[i + 1];
                 builder.WithOutputFile(outputFileName);
             }
-                
+
             if ((i = ArgPos("-size", args)) > -1)
                 builder.WithSize(int.Parse(args[i + 1]));
             if ((i = ArgPos("-save-vocab", args)) > -1)
