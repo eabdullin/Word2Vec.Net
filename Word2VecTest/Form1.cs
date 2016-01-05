@@ -18,7 +18,7 @@ namespace Word2VecTest
             InitializeComponent();
         }
 
-        private Distance _distance = new Distance("..\\..\\..\\Data\\result_kazakh_150.bin");
+        private Distance _distance = new Distance("..\\..\\..\\Data\\result_rus_200.bin");
         private void searchBtn_Click(object sender, EventArgs e)
         {
             resultsListBox.Items.Clear();

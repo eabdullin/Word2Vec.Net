@@ -463,13 +463,12 @@ namespace Word2Vec.Net
             long wordCount = 0, lastWordCount = 0;
             var sen = new long[MaxSentenceLength + 1];
             long localIter = _iter;
-            Console.WriteLine("{0} started", id);
+            //Console.WriteLine("{0} started", id);
             Thread.Sleep(100);
             var nextRandom = (ulong) id;
             float g;
             var neu1 = new float[_layer1Size];
             var neu1e = new float[_layer1Size];
-            //FILE *fi = fopen(train_file, "rb");
             using (StreamReader fi = File.OpenText(_trainFile))
             {
                 fi.BaseStream.Seek(_fileSize/_numThreads*id, SeekOrigin.Begin);
@@ -540,8 +539,6 @@ namespace Word2Vec.Net
                         lastWordCount = 0;
                         sentenceLength = 0;
                         fi.BaseStream.Seek(_fileSize/_numThreads*id, SeekOrigin.Begin);
-                        //fseek(fi, file_size/(long long ) num_threads*(long long ) id, SEEK_SET)
-                        //;
                         continue;
                     }
                     word = sen[sentencePosition];
@@ -713,7 +710,8 @@ namespace Word2Vec.Net
             //fseek(fi, file_size / (long long)num_threads * (long long)id, SEEK_SET);
         }
         /// <summary>
-        /// e
+        /// train model
+        /// WORD VECTOR estimation method
         /// </summary>
         public void TrainModel()
         {
@@ -730,16 +728,16 @@ namespace Word2Vec.Net
             if (_negative > 0) InitUnigramTable();
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
-            ParallelOptions parallelOptions = new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = _numThreads
-            };
-            var result = Parallel.For(0, _numThreads, parallelOptions, TrainModelThreadStart);
-            if (!result.IsCompleted)
-            {
-                throw new InvalidOperationException();
-            }
-
+            //ParallelOptions parallelOptions = new ParallelOptions()
+            //{
+            //    MaxDegreeOfParallelism = _numThreads
+            //};
+            //var result = Parallel.For(0, _numThreads, parallelOptions, TrainModelThreadStart);
+            //if (!result.IsCompleted)
+            //{
+            //    throw new InvalidOperationException();
+            //}
+            TrainModelThreadStart(1);
             using (var stream = new FileStream(_outputFile, FileMode.Create, FileAccess.Write))
             {
                 long b;
@@ -837,7 +835,6 @@ namespace Word2Vec.Net
                     //free(centcn);
                     //free(cent);
                     //free(cl);
-                    GC.Collect();
                 }
                 //fclose(fo);
             }
