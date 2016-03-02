@@ -1,6 +1,6 @@
 ﻿namespace Word2VecTest
 {
-    partial class Form1
+    partial class Word2VecApp
     {
         /// <summary>
         /// Required designer variable.
@@ -43,7 +43,7 @@
             // 
             // searchTextBox
             // 
-            this.searchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.searchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.searchTextBox.Location = new System.Drawing.Point(12, 27);
             this.searchTextBox.Name = "searchTextBox";
@@ -63,8 +63,8 @@
             // 
             // resultsListBox
             // 
-            this.resultsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.resultsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.resultsListBox.FormattingEnabled = true;
             this.resultsListBox.Location = new System.Drawing.Point(12, 64);
@@ -99,7 +99,7 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -117,14 +117,14 @@
             this.distanceToolStripMenuItem.Checked = true;
             this.distanceToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.distanceToolStripMenuItem.Name = "distanceToolStripMenuItem";
-            this.distanceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.distanceToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.distanceToolStripMenuItem.Text = "Distance";
             this.distanceToolStripMenuItem.Click += new System.EventHandler(this.distanceToolStripMenuItem_Click);
             // 
             // analogyToolStripMenuItem
             // 
             this.analogyToolStripMenuItem.Name = "analogyToolStripMenuItem";
-            this.analogyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.analogyToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.analogyToolStripMenuItem.Text = "Analogy";
             this.analogyToolStripMenuItem.Click += new System.EventHandler(this.analogyToolStripMenuItem_Click);
             // 
@@ -139,7 +139,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Word2Vec Viewer";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

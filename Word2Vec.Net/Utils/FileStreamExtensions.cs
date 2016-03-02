@@ -44,5 +44,20 @@ namespace Word2Vec.Net.Utils
             }
             return Int32.Parse(builder.ToString());
         }
+
+        public static string ReadLine(this FileStream stream)
+        {
+            var messageBuilder = new List<byte>();
+            byte byteAsInt;
+            while ((byteAsInt = (byte)stream.ReadByte()) != -1)
+            {
+                if (byteAsInt == '\n' || stream.Position == stream.Length)
+                {
+                    break;
+                }
+                messageBuilder.Add(byteAsInt);
+            }
+            return Encoding.UTF8.GetString(messageBuilder.ToArray());
+        }
     }
 }

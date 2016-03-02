@@ -11,11 +11,11 @@ using Word2Vec.Net;
 
 namespace Word2VecTest
 {
-    public partial class Form1 : Form
+    public partial class Word2VecApp : Form
     {
         private string _fileName;
         private string Type = "Distance";
-        public Form1()
+        public Word2VecApp()
         {
             InitializeComponent();
         }

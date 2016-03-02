@@ -16,7 +16,7 @@ namespace Word2VecTest
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Word2VecApp());
         }
     }
 }

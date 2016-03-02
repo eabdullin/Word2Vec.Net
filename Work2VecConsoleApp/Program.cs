@@ -88,7 +88,6 @@ namespace Work2VecConsoleApp
                 builder.WithCBow(int.Parse(args[i + 1]));
             if ((i = ArgPos("-alpha", args)) > -1)
                 builder.WithAlpha(float.Parse(args[i + 1]));
-
             if ((i = ArgPos("-window", args)) > -1)
                 builder.WithWindow(int.Parse(args[i + 1]));
             if ((i = ArgPos("-sample", args)) > -1)
@@ -107,22 +106,6 @@ namespace Work2VecConsoleApp
                 builder.WithClasses(int.Parse(args[i + 1]));
             Word2Vec.Net.Word2Vec word2Vec = builder.Build();
             word2Vec.TrainModel();
-
-            var distance = new Distance(outputFileName);
-            while (true)
-            {
-                Console.WriteLine("Distance: Enter word or sentence (EXIT to break): ");
-                string text = Console.ReadLine();
-                if (text == null || text.ToLower().Equals("exit"))
-                    break;
-                var result = distance.Search(text);
-                Console.WriteLine("\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
-                foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
-                {
-                    Console.WriteLine("{0}\t\t{1}", bestWord.Word, bestWord.Distance);
-                }
-                Console.WriteLine();
-            }
         }
 
         private static int ArgPos(string str, string[] args)
