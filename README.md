@@ -1,5 +1,6 @@
 # Word2Vec.Net
 [![Gitter](https://badges.gitter.im/eabdullin/Word2Vec.Net.svg)](https://gitter.im/eabdullin/Word2Vec.Net?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 implementation Word2Vec(https://code.google.com/p/word2vec/) for .Net framework
 
 #Getting Started
