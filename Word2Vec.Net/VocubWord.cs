@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Word2Vec.Net
 {
@@ -16,11 +15,4 @@ namespace Word2Vec.Net
         }
     }
     // Used later for sorting by word counts
-    internal class VocubComparer : IComparer<VocubWord>
-    {
-        public int Compare(VocubWord x, VocubWord y)
-        {
-            return (int)(y.Cn - x.Cn );
-        }
-    }
 }
