@@ -42,7 +42,6 @@ namespace Word2Vec.Net
     private long _fileSize;
     private int _minReduce = 1;
     private float _startingAlpha;
-    private Stopwatch _stopwatch;
     private float[] _syn0;
     private float[] _syn1;
     private float[] _syn1Neg;
@@ -457,8 +456,6 @@ namespace Word2Vec.Net
       InitNet();
       if (_negative > 0)
         InitUnigramTable();
-      _stopwatch = new Stopwatch();
-      _stopwatch.Start();
       var parallelOptions = new ParallelOptions
       {
         MaxDegreeOfParallelism = _numThreads

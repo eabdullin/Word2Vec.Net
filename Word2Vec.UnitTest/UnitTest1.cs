@@ -25,7 +25,7 @@ namespace Word2Vec.UnitTest
                                     .WithWindow(7) //Set max skip length between words; default is 5
                                     .WithSample((float)1e-3)
                                     //Set threshold for occurrence of words. Those that appear with higher frequency in the training data twill be randomly down-sampled; default is 1e-3, useful range is (0, 1e-5)
-                                    .WithHs(0) //Use Hierarchical Softmax; default is 0 (not used)
+                                    .WithHs(1) //Use Hierarchical Softmax; default is 0 (not used)
                                     .WithNegative(5)
                                     //Number of negative examples; default is 5, common values are 3 - 10 (0 = not used)
                                     .WithThreads(5) //Use <int> threads (default 12)
@@ -45,20 +45,22 @@ namespace Word2Vec.UnitTest
       var distance = new Distance("faust1.bin");
       var bestwords = distance.Search("Gott");
       Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Count > 0);
       Assert.IsTrue(bestwords.Count == 744);
-      var top = bestwords.OrderByDescending(x => x.Value).Take(40).ToArray();
-      Assert.IsTrue(top[0].Key == "Nacht");
-      Assert.IsTrue(top[39].Key == "Wort");
 
       bestwords = distance.Search("ich");
       Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Count > 0);
       Assert.IsTrue(bestwords.Count == 744);
-      top = bestwords.OrderByDescending(x => x.Value).Take(40).ToArray();
-      Console.WriteLine(top.First().Key);
-      Assert.IsTrue(top[0].Key == "darf");
-      Assert.IsTrue(top[39].Key == "diesmal");
-    }    
+    }
+
+    [TestMethod]
+    public void TestWordAnalogy()
+    {
+      var analogy = new WordAnalogy("faust1.bin") { MinimumDistance = 0 };
+      var result = analogy.Search("FAUST: MEPHISTOPHELES:");
+      Assert.IsNotNull(result);
+      Assert.IsTrue(result.Count == 745);
+      var top = result.OrderByDescending(x => x.Value).Take(40).ToArray();
+      Assert.IsTrue(top[39].Key == "liebt");
+    }
   }
 }

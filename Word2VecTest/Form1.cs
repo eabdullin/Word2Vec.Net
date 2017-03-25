@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using Word2Vec.Net;
 
@@ -40,7 +42,7 @@ namespace Word2VecTest
     private void searchBtn_Click(object sender, EventArgs e)
     {
       resultsListBox.Items.Clear();
-      var result = new BestWord[0];
+      Dictionary<string,double> result = null;
       switch (Type)
       {
         case "Analogy":
@@ -50,15 +52,15 @@ namespace Word2VecTest
           result = _distance.Search(searchTextBox.Text);
           break;
         default:
-          break;
+          return;
       }
-      foreach (var bestWord in result)
-        resultsListBox.Items.Add(string.Format("{0}\t\t{1}", bestWord.Word, bestWord.Distance));
+      foreach (var bestWord in result.OrderByDescending(x=>x.Value))
+        resultsListBox.Items.Add($"{bestWord.Key}\t\t{bestWord.Value}");
     }
 
     private void SetFileName()
     {
-      _analogy = new WordAnalogy(_fileName);
+      _analogy = new WordAnalogy(_fileName){ MinimumDistance = 0.0 };
       _distance = new Distance(_fileName);
     }
   }

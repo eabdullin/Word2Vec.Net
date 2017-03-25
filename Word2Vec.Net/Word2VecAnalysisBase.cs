@@ -31,7 +31,7 @@ namespace Word2Vec.Net
 
     protected long Words { get; set; }
 
-    public double MinimumDistance { get; set; } = 0.1;
+    public double MinimumDistance { get; set; } = 0.999;
 
     private void InitVocub()
     {
