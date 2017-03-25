@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -472,11 +473,11 @@ namespace Word2Vec.Net
         if (_classes == 0)
         {
           // Save the word vectors
-          var bytes = $"{_vocabSize} {_layer1Size}\n".GetBytes();
+          var bytes = Encoding.UTF8.GetBytes($"{_vocabSize} {_layer1Size}\n");
           stream.Write(bytes, 0, bytes.Length);
           for (var a = 0; a < _vocabSize; a++)
           {
-            bytes = string.Concat(_vocab[a].Word, ' ').GetBytes();
+            bytes = Encoding.UTF8.GetBytes(string.Concat(_vocab[a].Word, ' '));
             stream.Write(bytes, 0, bytes.Length);
             if (_binary > 0)
               for (b = 0; b < _layer1Size; b++)
@@ -488,10 +489,10 @@ namespace Word2Vec.Net
             else
               for (b = 0; b < _layer1Size; b++)
               {
-                bytes = string.Concat(_syn0[a * _layer1Size + b], " ").GetBytes();
+                bytes = Encoding.UTF8.GetBytes(string.Concat(_syn0[a * _layer1Size + b], " "));
                 stream.Write(bytes, 0, bytes.Length);
               }
-            bytes = "\n".GetBytes();
+            bytes = Encoding.UTF8.GetBytes("\n");
             stream.Write(bytes, 0, bytes.Length);
           }
         }
@@ -552,7 +553,7 @@ namespace Word2Vec.Net
           // Save the K-means classes
           for (var a = 0; a < _vocabSize; a++)
           {
-            var bytes = $"{_vocab[a].Word} {cl[a]}\n".GetBytes();
+            var bytes = Encoding.UTF8.GetBytes($"{_vocab[a].Word} {cl[a]}\n");
             stream.Write(bytes, 0, bytes.Length);
           }
         }

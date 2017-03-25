@@ -44,7 +44,6 @@
     <Compile Include="BestWord.cs" />
     <Compile Include="Distance.cs" />
     <Compile Include="FileStreamExtensions.cs" />
-    <Compile Include="StringExtension.cs" />
     <Compile Include="VocubComparer.cs" />
     <Compile Include="VocubWord.cs" />
     <Compile Include="Word2Vec.cs" />
