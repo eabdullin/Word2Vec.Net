@@ -79,7 +79,7 @@ namespace Word2Vec.Net
       _expTable = new float[ExpTableSize + 1];
       for (var i = 0; i < ExpTableSize; i++)
       {
-        _expTable[i] = (float) Math.Exp((i / ExpTableSize * 2 - 1) * MaxExp); // Precompute the exp() table
+        _expTable[i] = (float) Math.Exp((i / (float)ExpTableSize * 2 - 1) * MaxExp); // Precompute the exp() table
         _expTable[i] = _expTable[i] / (_expTable[i] + 1); // Precompute f(x) = x / (x + 1)
       }
       _readVocabFile = readVocubFileName;
