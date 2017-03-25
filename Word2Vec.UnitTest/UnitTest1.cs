@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Word2Vec.Net;
 
 namespace Word2Vec.UnitTest
@@ -43,12 +45,20 @@ namespace Word2Vec.UnitTest
       var distance = new Distance("faust1.bin");
       var bestwords = distance.Search("Gott");
       Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Length > 0);
-      Assert.IsTrue(bestwords.Length == 40);
+      Assert.IsTrue(bestwords.Count > 0);
+      Assert.IsTrue(bestwords.Count == 744);
+      var top = bestwords.OrderByDescending(x => x.Value).Take(40).ToArray();
+      Assert.IsTrue(top[0].Key == "Nacht");
+      Assert.IsTrue(top[39].Key == "Wort");
+
       bestwords = distance.Search("ich");
       Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Length > 0);
-      Assert.IsTrue(bestwords.Length == 40);
+      Assert.IsTrue(bestwords.Count > 0);
+      Assert.IsTrue(bestwords.Count == 744);
+      top = bestwords.OrderByDescending(x => x.Value).Take(40).ToArray();
+      Console.WriteLine(top.First().Key);
+      Assert.IsTrue(top[0].Key == "darf");
+      Assert.IsTrue(top[39].Key == "diesmal");
     }    
   }
 }

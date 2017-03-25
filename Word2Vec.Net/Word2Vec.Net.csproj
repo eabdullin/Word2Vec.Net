@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BestWord.cs" />
     <Compile Include="Distance.cs" />
     <Compile Include="FileStreamExtensions.cs" />
     <Compile Include="VocubComparer.cs" />

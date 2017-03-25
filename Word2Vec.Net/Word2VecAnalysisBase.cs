@@ -31,6 +31,8 @@ namespace Word2Vec.Net
 
     protected long Words { get; set; }
 
+    public double MinimumDistance { get; set; } = 0.1;
+
     private void InitVocub()
     {
       using (var f = File.Open(file_name, FileMode.Open, FileAccess.Read))

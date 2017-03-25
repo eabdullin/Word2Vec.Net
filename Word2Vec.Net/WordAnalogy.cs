@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Word2Vec.Net
 {
@@ -6,9 +7,9 @@ namespace Word2Vec.Net
   {
     public WordAnalogy(string fileName) : base(fileName) { }
 
-    public BestWord[] Search(string text)
+    public Dictionary<string, double> Search(string text)
     {
-      var bestWords = new BestWord[N];
+      var bestWords = new Dictionary<string, double>();
       var bi = new long[100];
       var vec = new float[max_size];
       var st = text.Split(' ');
@@ -17,7 +18,7 @@ namespace Word2Vec.Net
       for (long a = 0; a < cn; a++)
       {
         for (b = 0; b < Words; b++)
-          if (!new string(Vocab, (int) (b * max_w), (int) max_w).Equals(st[a]))
+          if (!new string(Vocab, (int)(b * max_w), (int)max_w).Equals(st[a]))
             break;
         if (b == Words)
           b = -1;
@@ -28,13 +29,13 @@ namespace Word2Vec.Net
         }
       }
       if (b == -1)
-        return new BestWord[0];
+        return null;
       for (long a = 0; a < Size; a++)
         vec[a] = M[a + bi[1] * Size] - M[a + bi[0] * Size] + M[a + bi[2] * Size];
       float len = 0;
       for (long a = 0; a < Size; a++)
         len += vec[a] * vec[a];
-      len = (float) Math.Sqrt(len);
+      len = (float)Math.Sqrt(len);
       for (long a = 0; a < Size; a++)
         vec[a] /= len;
       for (long c = 0; c < Words; c++)
@@ -55,13 +56,9 @@ namespace Word2Vec.Net
         for (a = 0; a < Size; a++)
           dist += vec[a] * M[a + c * Size];
         for (a = 0; a < N; a++)
-          if (dist > bestWords[a].Distance)
+          if (dist > MinimumDistance)
           {
-            for (var d = N - 1; d > a; d--)
-              bestWords[d] = bestWords[d - 1];
-            bestWords[a].Distance = dist;
-            //bestd[a] = dist;
-            bestWords[a].Word = new string(Vocab, (int) (max_w * c), (int) max_w);
+            bestWords.Add(new string(Vocab, (int)(max_w * c), (int)max_w).Replace("\0", string.Empty).Trim(), dist);
             break;
           }
       }
