@@ -22,7 +22,6 @@ namespace Word2Vec.Net
     private readonly int _binary;
     private readonly int _cbow;
     private readonly long _classes;
-    private readonly int _debugMode;
     private readonly float[] _expTable;
     private readonly int _hs;
     private readonly long _iter;
@@ -59,7 +58,6 @@ namespace Word2Vec.Net
       string saveVocabFileName,
       string readVocubFileName,
       int size,
-      int debugMode,
       int binary,
       int cbow,
       float alpha,
@@ -86,7 +84,6 @@ namespace Word2Vec.Net
       }
       _readVocabFile = readVocubFileName;
       _layer1Size = size;
-      _debugMode = debugMode;
       _binary = binary;
       _cbow = cbow;
       _alpha = alpha;
@@ -299,8 +296,6 @@ namespace Word2Vec.Net
             if (string.IsNullOrWhiteSpace(word))
               continue;
             _trainWords++;
-            if (_debugMode > 1 && _trainWords % 100000 == 0)
-              Console.Write("{0}K \r", _trainWords / 1000);
             var i = SearchVocab(word);
             if (i == -1)
             {
@@ -316,12 +311,6 @@ namespace Word2Vec.Net
           }
         }
         SortVocab();
-        if (_debugMode > 0)
-        {
-          Console.WriteLine("Vocab size: {0}", _vocabSize);
-          Console.WriteLine("Words in train file: {0}", _trainWords);
-        }
-        //file_size = ftell(fin);
         _fileSize = new FileInfo(_trainFile).Length;
       }
     }
@@ -345,11 +334,6 @@ namespace Word2Vec.Net
           }
         }
         SortVocab();
-        if (_debugMode > 0)
-        {
-          Console.WriteLine("Vocab size: {0}", _vocabSize);
-          Console.WriteLine("Words in train file: {0}", _trainWords);
-        }
       }
       var fileInfo = new FileInfo(_trainFile);
       _fileSize = fileInfo.Length;
@@ -460,7 +444,6 @@ namespace Word2Vec.Net
     /// </summary>
     public void TrainModel()
     {
-      Console.WriteLine("Starting training using file {0}\n", _trainFile);
       _startingAlpha = _alpha;
       if (!string.IsNullOrEmpty(_readVocabFile))
         ReadVocab();
@@ -482,7 +465,7 @@ namespace Word2Vec.Net
       var result = Parallel.For(0, _numThreads, parallelOptions, TrainModelThreadStart);
       if (!result.IsCompleted)
         throw new InvalidOperationException();
-      //TrainModelThreadStart(1);
+      
       using (var stream = new FileStream(_outputFile, FileMode.Create, FileAccess.Write))
       {
         long b;
@@ -585,7 +568,7 @@ namespace Word2Vec.Net
       long wordCount = 0, lastWordCount = 0;
       var sen = new long[MaxSentenceLength + 1];
       var localIter = _iter;
-      Thread.Sleep(100);
+
       var nextRandom = (ulong) id;
       float g;
       var neu1 = new float[_layer1Size];
@@ -599,12 +582,6 @@ namespace Word2Vec.Net
           {
             _wordCountActual += wordCount - lastWordCount;
             lastWordCount = wordCount;
-            if (_debugMode > 1)
-              Console.Write(
-                "\rAlpha: {0}  Progress: {1:0.00}%  Words/thread/sec:{2:0.00}K ",
-                _alpha,
-                _wordCountActual / (float) (_iter * _trainWords + 1) * 100,
-                _wordCountActual / (float) _stopwatch.ElapsedMilliseconds); //*1000
             _alpha = _startingAlpha * (1 - _wordCountActual / (float) (_iter * _trainWords + 1));
             if (_alpha < _startingAlpha * (float) 0.0001)
               _alpha = _startingAlpha * (float) 0.0001;

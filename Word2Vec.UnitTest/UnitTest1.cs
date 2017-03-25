@@ -15,7 +15,6 @@ namespace Word2Vec.UnitTest
                                     //Use to save the resulting word vectors / word clusters
                                     .WithSize(200) //Set size of word vectors; default is 100
                                     .WithSaveVocubFile("faust1.dic") //The vocabulary will be saved to <file>
-                                    .WithDebug(2) //Set the debug mode (default = 2 = more info during training)
                                     .WithBinary(1) //Save the resulting vectors in binary moded; default is 0 (off)
                                     .WithCBow(1)
                                     //Use the continuous bag of words model; default is 1 (use 0 for skip-gram model)

@@ -6,7 +6,6 @@
     private int _binary;
     private int _cbow = 1;
     private long _classes;
-    private int _debugMode = 2;
 
     private int _hs;
     private long _iter = 5;
@@ -32,7 +31,6 @@
         _saveVocabFile,
         _readVocabFile,
         _layer1Size,
-        _debugMode,
         _binary,
         _cbow,
         _alpha,
@@ -70,12 +68,6 @@
     public Word2VecBuilder WithClasses(int classes)
     {
       _classes = classes;
-      return this;
-    }
-
-    public Word2VecBuilder WithDebug(int debugMode)
-    {
-      _debugMode = debugMode;
       return this;
     }
 

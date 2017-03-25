@@ -22,16 +22,13 @@ namespace Word2Vec.Net
         if (b == Words)
           b = -1;
         bi[a] = b;
-        Console.Write("\nWord: {0}  Position in vocabulary: {1}\n", st[a], bi[a]);
         if (b == -1)
         {
-          Console.Write("Out of dictionary word!\n");
           break;
         }
       }
       if (b == -1)
         return new BestWord[0];
-      //Console.WriteLine("\n                                              Word              Distance\n------------------------------------------------------------------------\n");
       for (long a = 0; a < Size; a++)
         vec[a] = M[a + bi[1] * Size] - M[a + bi[0] * Size] + M[a + bi[2] * Size];
       float len = 0;
@@ -40,8 +37,6 @@ namespace Word2Vec.Net
       len = (float) Math.Sqrt(len);
       for (long a = 0; a < Size; a++)
         vec[a] /= len;
-      //for (long a = 0; a < N; a++) bestd[a] = 0;
-      //for (a = 0; a < N; a++) bestw[a][0] = 0;
       for (long c = 0; c < Words; c++)
       {
         if (c == bi[0])
