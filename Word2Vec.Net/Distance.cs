@@ -27,7 +27,6 @@ namespace Word2Vec.Net
         for (b = 0; b < Words; b++)
         {
           var word = new string(Vocab, (int) (b * max_w), (int) max_w).Replace("\0", string.Empty);
-          ;
           if (word.Equals(st[a]))
             break;
         }

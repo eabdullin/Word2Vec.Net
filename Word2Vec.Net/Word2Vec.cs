@@ -12,15 +12,32 @@ namespace Word2Vec.Net
   /// </summary>
   public class Word2Vec
   {
+    private const int ExpTableSize = 1000;
+
+    private const int MaxCodeLength = 40;
+    private const int MaxExp = 6;
+    private const int MaxSentenceLength = 1000;
     private const int TableSize = (int) 1e8;
+    private const int VocabHashSize = 30000000;
+    private readonly int _binary;
+    private readonly int _cbow;
     private readonly long _classes;
+    private readonly int _debugMode;
     private readonly float[] _expTable;
     private readonly int _hs;
     private readonly long _iter;
     private readonly int _layer1Size;
+    private readonly int _minCount;
     private readonly int _negative;
+    private readonly int _numThreads;
+    private readonly string _outputFile;
+    private readonly string _readVocabFile;
     private readonly float _sample;
+    private readonly string _saveVocabFile;
+
+    private readonly string _trainFile;
     private readonly int[] _vocabHash;
+    private readonly int _window;
     private float _alpha;
     private long _fileSize;
     private int _minReduce = 1;
@@ -110,8 +127,6 @@ namespace Word2Vec.Net
     // Frequent words will have short uniqe binary codes
     private void CreateBinaryTree()
     {
-      long pos1;
-      long pos2;
       var code = new char[MaxCodeLength];
       var point = new long[MaxCodeLength];
       var count = new long[_vocabSize * 2 + 1];
@@ -122,54 +137,54 @@ namespace Word2Vec.Net
         count[a] = _vocab[a].Cn;
       for (var a = _vocabSize; a < _vocabSize * 2; a++)
         count[a] = (long) 1e15;
-      pos1 = _vocabSize - 1;
-      pos2 = _vocabSize;
+      long pos1 = _vocabSize - 1;
+      long pos2 = _vocabSize;
       // Following algorithm constructs the Huffman tree by adding one node at a time
       for (var a = 0; a < _vocabSize - 1; a++)
       {
         // First, find two smallest nodes 'min1, min2'
-        long min1i;
+        long min1I;
         if (pos1 >= 0)
         {
           if (count[pos1] < count[pos2])
           {
-            min1i = pos1;
+            min1I = pos1;
             pos1--;
           }
           else
           {
-            min1i = pos2;
+            min1I = pos2;
             pos2++;
           }
         }
         else
         {
-          min1i = pos2;
+          min1I = pos2;
           pos2++;
         }
-        long min2i;
+        long min2I;
         if (pos1 >= 0)
         {
           if (count[pos1] < count[pos2])
           {
-            min2i = pos1;
+            min2I = pos1;
             pos1--;
           }
           else
           {
-            min2i = pos2;
+            min2I = pos2;
             pos2++;
           }
         }
         else
         {
-          min2i = pos2;
+          min2I = pos2;
           pos2++;
         }
-        count[_vocabSize + a] = count[min1i] + count[min2i];
-        parentNode[min1i] = _vocabSize + a;
-        parentNode[min2i] = _vocabSize + a;
-        binary[min2i] = 1;
+        count[_vocabSize + a] = count[min1I] + count[min2I];
+        parentNode[min1I] = _vocabSize + a;
+        parentNode[min2I] = _vocabSize + a;
+        binary[min2I] = 1;
       }
       // Now assign binary code to each vocabulary word
       for (long a = 0; a < _vocabSize; a++)
@@ -262,7 +277,6 @@ namespace Word2Vec.Net
 
     private void LearnVocabFromTrainFile()
     {
-      int i;
       for (var a = 0; a < VocabHashSize; a++)
         _vocabHash[a] = -1;
       using (var fin = File.OpenText(_trainFile))
@@ -287,7 +301,7 @@ namespace Word2Vec.Net
             _trainWords++;
             if (_debugMode > 1 && _trainWords % 100000 == 0)
               Console.Write("{0}K \r", _trainWords / 1000);
-            i = SearchVocab(word);
+            var i = SearchVocab(word);
             if (i == -1)
             {
               var a = AddWordToVocab(word);
@@ -400,7 +414,6 @@ namespace Word2Vec.Net
           return _vocabHash[hash];
         hash = (hash + 1) % VocabHashSize;
       }
-      return -1;
     }
 
 
@@ -447,7 +460,6 @@ namespace Word2Vec.Net
     /// </summary>
     public void TrainModel()
     {
-      long d;
       Console.WriteLine("Starting training using file {0}\n", _trainFile);
       _startingAlpha = _alpha;
       if (!string.IsNullOrEmpty(_readVocabFile))
@@ -477,7 +489,7 @@ namespace Word2Vec.Net
         if (_classes == 0)
         {
           // Save the word vectors
-          var bytes = string.Format("{0} {1}\n", _vocabSize, _layer1Size).GetBytes();
+          var bytes = $"{_vocabSize} {_layer1Size}\n".GetBytes();
           stream.Write(bytes, 0, bytes.Length);
           for (var a = 0; a < _vocabSize; a++)
           {
@@ -516,6 +528,7 @@ namespace Word2Vec.Net
             for (b = 0; b < clcn; b++)
               centcn[b] = 1;
             long c;
+            long d;
             for (c = 0; c < _vocabSize; c++)
             {
               for (d = 0; d < _layer1Size; d++)
@@ -556,19 +569,10 @@ namespace Word2Vec.Net
           // Save the K-means classes
           for (var a = 0; a < _vocabSize; a++)
           {
-            var bytes = string.Format("{0} {1}\n", _vocab[a].Word, cl[a]).GetBytes();
+            var bytes = $"{_vocab[a].Word} {cl[a]}\n".GetBytes();
             stream.Write(bytes, 0, bytes.Length);
           }
-
-
-          centcn = null;
-          cent = null;
-          cl = null;
-          //free(centcn);
-          //free(cent);
-          //free(cl);
         }
-        //fclose(fo);
       }
       GC.Collect();
     }
@@ -581,12 +585,11 @@ namespace Word2Vec.Net
       long wordCount = 0, lastWordCount = 0;
       var sen = new long[MaxSentenceLength + 1];
       var localIter = _iter;
-      //Console.WriteLine("{0} started", id);
       Thread.Sleep(100);
       var nextRandom = (ulong) id;
       float g;
       var neu1 = new float[_layer1Size];
-      var neu1e = new float[_layer1Size];
+      var neu1E = new float[_layer1Size];
       using (var fi = File.OpenText(_trainFile))
       {
         fi.BaseStream.Seek(_fileSize / _numThreads * id, SeekOrigin.Begin);
@@ -669,7 +672,7 @@ namespace Word2Vec.Net
           for (c = 0; c < _layer1Size; c++)
             neu1[c] = 0;
           for (c = 0; c < _layer1Size; c++)
-            neu1e[c] = 0;
+            neu1E[c] = 0;
           nextRandom = nextRandom * 25214903917 + 11;
           var b = (long) (nextRandom % (ulong) _window);
           long label;
@@ -719,7 +722,7 @@ namespace Word2Vec.Net
                   g = (1 - _vocab[word].Code[d] - f) * _alpha;
                   // Propagate errors output -> hidden
                   for (c = 0; c < _layer1Size; c++)
-                    neu1e[c] += g * _syn1[c + l2];
+                    neu1E[c] += g * _syn1[c + l2];
                   // Learn weights hidden -> output
                   for (c = 0; c < _layer1Size; c++)
                     _syn1[c + l2] += g * neu1[c];
@@ -754,7 +757,7 @@ namespace Word2Vec.Net
                   else
                     g = (label - _expTable[(int) ((f + MaxExp) * (ExpTableSize / MaxExp / 2))]) * _alpha;
                   for (c = 0; c < _layer1Size; c++)
-                    neu1e[c] += g * _syn1Neg[c + l2];
+                    neu1E[c] += g * _syn1Neg[c + l2];
                   for (c = 0; c < _layer1Size; c++)
                     _syn1Neg[c + l2] += g * neu1[c];
                 }
@@ -771,7 +774,7 @@ namespace Word2Vec.Net
                   if (lastWord == -1)
                     continue;
                   for (c = 0; c < _layer1Size; c++)
-                    _syn0[c + lastWord * _layer1Size] += neu1e[c];
+                    _syn0[c + lastWord * _layer1Size] += neu1E[c];
                 }
             }
           }
@@ -791,7 +794,7 @@ namespace Word2Vec.Net
                   continue;
                 var l1 = lastWord * _layer1Size;
                 for (c = 0; c < _layer1Size; c++)
-                  neu1e[c] = 0;
+                  neu1E[c] = 0;
                 // HIERARCHICAL SOFTMAX
                 if (_hs != 0)
                   for (d = 0; d < _vocab[word].CodeLen; d++)
@@ -810,7 +813,7 @@ namespace Word2Vec.Net
                     g = (1 - _vocab[word].Code[d] - f) * _alpha;
                     // Propagate errors output -> hidden
                     for (c = 0; c < _layer1Size; c++)
-                      neu1e[c] += g * _syn1[c + l2];
+                      neu1E[c] += g * _syn1[c + l2];
                     // Learn weights hidden -> output
                     for (c = 0; c < _layer1Size; c++)
                       _syn1[c + l2] += g * _syn0[c + l1];
@@ -846,53 +849,21 @@ namespace Word2Vec.Net
                       g = (label - _expTable[(int) ((f + MaxExp) * (ExpTableSize / MaxExp / 2))]) *
                           _alpha;
                     for (c = 0; c < _layer1Size; c++)
-                      neu1e[c] += g * _syn1Neg[c + l2];
+                      neu1E[c] += g * _syn1Neg[c + l2];
                     for (c = 0; c < _layer1Size; c++)
                       _syn1Neg[c + l2] += g * _syn0[c + l1];
                   }
                 // Learn weights input -> hidden
                 for (c = 0; c < _layer1Size; c++)
-                  _syn0[c + l1] += neu1e[c];
+                  _syn0[c + l1] += neu1E[c];
               }
           }
           sentencePosition++;
           if (sentencePosition >= sentenceLength)
             sentenceLength = 0;
         }
-        //fclose(fi);
-        //free(neu1);
-        //free(neu1e);
-        //pthread_exit(NULL);
       }
-      neu1 = null;
-      neu1e = null;
       GC.Collect();
-      //fseek(fi, file_size / (long long)num_threads * (long long)id, SEEK_SET);
     }
-
-    #region Constants
-
-    private const int MaxCodeLength = 40;
-    private const int MaxSentenceLength = 1000;
-    private const int ExpTableSize = 1000;
-    private const int MaxExp = 6;
-    private const int VocabHashSize = 30000000;
-
-    #endregion
-
-    #region Word2vec start params
-
-    private readonly string _trainFile;
-    private readonly string _outputFile;
-    private readonly string _saveVocabFile;
-    private readonly string _readVocabFile;
-    private readonly int _binary;
-    private readonly int _cbow;
-    private readonly int _debugMode;
-    private readonly int _window;
-    private readonly int _minCount;
-    private readonly int _numThreads;
-
-    #endregion
   }
 }

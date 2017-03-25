@@ -7,21 +7,7 @@ namespace Word2Vec.UnitTest
   public class UnitTest1
   {
     [TestMethod]
-    public void TestDistance()
-    {
-      var distance = new Distance("faust1.bin");
-      var bestwords = distance.Search("Gott");
-      Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Length > 0);
-      Assert.IsTrue(bestwords.Length == 40);
-      bestwords = distance.Search("ich");
-      Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Length > 0);
-      Assert.IsTrue(bestwords.Length == 40);
-    }
-
-    [TestMethod]
-    public void TestMethod1()
+    public void TestAppInit()
     {
       var word2Vec = Word2VecBuilder.Create()
                                     .WithTrainFile("TestData/faust1.txt") // Use text data to train the model;
@@ -36,7 +22,7 @@ namespace Word2Vec.UnitTest
                                     .WithAlpha(0.05f)
                                     //Set the starting learning rate; default is 0.025 for skip-gram and 0.05 for CBOW
                                     .WithWindow(7) //Set max skip length between words; default is 5
-                                    .WithSample((float) 1e-3)
+                                    .WithSample((float)1e-3)
                                     //Set threshold for occurrence of words. Those that appear with higher frequency in the training data twill be randomly down-sampled; default is 1e-3, useful range is (0, 1e-5)
                                     .WithHs(0) //Use Hierarchical Softmax; default is 0 (not used)
                                     .WithNegative(5)
@@ -51,5 +37,19 @@ namespace Word2Vec.UnitTest
 
       word2Vec.TrainModel();
     }
+
+    [TestMethod]
+    public void TestDistance()
+    {
+      var distance = new Distance("faust1.bin");
+      var bestwords = distance.Search("Gott");
+      Assert.IsNotNull(bestwords);
+      Assert.IsTrue(bestwords.Length > 0);
+      Assert.IsTrue(bestwords.Length == 40);
+      bestwords = distance.Search("ich");
+      Assert.IsNotNull(bestwords);
+      Assert.IsTrue(bestwords.Length > 0);
+      Assert.IsTrue(bestwords.Length == 40);
+    }    
   }
 }
