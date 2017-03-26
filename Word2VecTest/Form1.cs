@@ -47,7 +47,7 @@ namespace Word2VecTest
       switch (Type)
       {
         case "Analogy":
-          result = _analogy.Search(searchTextBox.Text);
+          result = _analogy.Search(searchTextBox.Text.Split(new[]{" "}, StringSplitOptions.RemoveEmptyEntries));
           break;
         case "Distance":
           result = _distance.Search(searchTextBox.Text);

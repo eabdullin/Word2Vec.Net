@@ -87,10 +87,6 @@ namespace Work2VecConsoleApp
         builder.WithSaveVocubFile(args[i + 1]);
       if ((i = ArgPos("-read-vocab", args)) > -1)
         builder.WithReadVocubFile(args[i + 1]);
-      if ((i = ArgPos("-debug", args)) > -1)
-        builder.WithDebug(int.Parse(args[i + 1]));
-      if ((i = ArgPos("-binary", args)) > -1)
-        builder.WithBinary(int.Parse(args[i + 1]));
       if ((i = ArgPos("-cbow", args)) > -1)
         builder.WithCBow(int.Parse(args[i + 1]));
       if ((i = ArgPos("-alpha", args)) > -1)
@@ -125,8 +121,8 @@ namespace Work2VecConsoleApp
         var result = distance.Search(text);
         Console.WriteLine(
           "\n                                              Word       Cosine distance\n------------------------------------------------------------------------");
-        foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Word)))
-          Console.WriteLine("{0}\t\t{1}", bestWord.Word, bestWord.Distance);
+        foreach (var bestWord in result.Where(x => !string.IsNullOrEmpty(x.Key)))
+          Console.WriteLine("{0}\t\t{1}", bestWord.Key, bestWord.Value);
         Console.WriteLine();
       }
     }
