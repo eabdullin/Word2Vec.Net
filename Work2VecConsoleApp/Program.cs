@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Word2Vec.Net;
+using Word2Vec.Net.Analytics;
 
 namespace Work2VecConsoleApp
 {

@@ -30,7 +30,6 @@
         _saveVocabFile,
         _readVocabFile,
         _layer1Size,
-        _binary,
         _cbow,
         _alpha,
         _sample,

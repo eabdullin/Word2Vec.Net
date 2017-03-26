@@ -1,6 +1,6 @@
 using System;
 
-namespace Word2Vec.Net
+namespace Word2Vec.Net.Model
 {
   internal struct VocubWord : IComparable<VocubWord>
   {

@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Word2Vec.Net;
+using Word2Vec.Net.Analytics;
 
 namespace Word2Vec.UnitTest
 {
@@ -17,7 +18,6 @@ namespace Word2Vec.UnitTest
                                     //Use to save the resulting word vectors / word clusters
                                     .WithSize(200) //Set size of word vectors; default is 100
                                     .WithSaveVocubFile("faust1.dic") //The vocabulary will be saved to <file>
-                                    .WithBinary(1) //Save the resulting vectors in binary moded; default is 0 (off)
                                     .WithCBow(1)
                                     //Use the continuous bag of words model; default is 1 (use 0 for skip-gram model)
                                     .WithAlpha(0.05f)
@@ -45,11 +45,11 @@ namespace Word2Vec.UnitTest
       var distance = new Distance("faust1.bin"){ MinimumDistance = 0.99};
       var bestwords = distance.Search("Gott");
       Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Count == 743);
+      Assert.IsTrue(bestwords.Count == 744);
 
       bestwords = distance.Search("ich");
       Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Count == 743);
+      Assert.IsTrue(bestwords.Count == 744);
     }
 
     [TestMethod]

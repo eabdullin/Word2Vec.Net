@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Word2Vec.Net.Analytics.Abstract;
 
-namespace Word2Vec.Net
+namespace Word2Vec.Net.Analytics
 {
   public class WordAnalogy : Word2VecAnalysisBase
   {

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace Word2Vec.Net.Utils
+namespace Word2Vec.Net
 {
   /// <summary>
   /// </summary>

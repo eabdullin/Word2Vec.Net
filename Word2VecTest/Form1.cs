@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Word2Vec.Net;
+using Word2Vec.Net.Analytics;
 
 namespace Word2VecTest
 {
