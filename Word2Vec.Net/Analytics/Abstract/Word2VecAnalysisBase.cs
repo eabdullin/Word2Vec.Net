@@ -32,7 +32,7 @@ namespace Word2Vec.Net.Analytics.Abstract
     {
       using (var fs = new FileStream(file_name, FileMode.Open, FileAccess.Read))
       {
-        using (var reader = new StreamReader(fs))
+        using (var reader = new StreamReader(fs, Encoding.UTF8))
         {
           Words = int.Parse(reader.ReadLine());
           Size = int.Parse(reader.ReadLine());
