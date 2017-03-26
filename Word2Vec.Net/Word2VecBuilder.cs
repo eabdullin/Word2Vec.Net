@@ -3,7 +3,6 @@
   public class Word2VecBuilder
   {
     private float _alpha = (float) 0.025;
-    private int _binary;
     private int _cbow = 1;
     private long _classes;
 
@@ -50,12 +49,6 @@
     public Word2VecBuilder WithAlpha(float alpha)
     {
       _alpha = alpha;
-      return this;
-    }
-
-    public Word2VecBuilder WithBinary(int binary)
-    {
-      _binary = binary;
       return this;
     }
 

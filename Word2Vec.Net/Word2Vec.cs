@@ -20,7 +20,6 @@ namespace Word2Vec.Net
     private const int MaxSentenceLength = 1000;
     private const int TableSize = (int) 1e8;
     private const int VocabHashSize = 30000000;
-    private readonly int _binary;
     private readonly int _cbow;
     private readonly long _classes;
     private readonly float[] _expTable;
@@ -58,7 +57,6 @@ namespace Word2Vec.Net
       string saveVocabFileName,
       string readVocubFileName,
       int size,
-      int binary,
       int cbow,
       float alpha,
       float sample,
@@ -84,7 +82,6 @@ namespace Word2Vec.Net
       }
       _readVocabFile = readVocubFileName;
       _layer1Size = size;
-      _binary = binary;
       _cbow = cbow;
       _alpha = alpha;
       _sample = sample;
@@ -311,7 +308,6 @@ namespace Word2Vec.Net
           }
         }
         SortVocab();
-        _fileSize = new FileInfo(_trainFile).Length;
       }
     }
 
@@ -323,20 +319,17 @@ namespace Word2Vec.Net
       using (var fin = File.OpenText(_readVocabFile))
       {
         string line;
-        var regex = new Regex("\\s");
         while ((line = fin.ReadLine()) != null)
         {
-          var vals = regex.Split(line);
-          if (vals.Length == 2)
-          {
-            var a = AddWordToVocab(vals[0]);
-            _vocab[a].Cn = int.Parse(vals[1]);
-          }
+          var vals = line.Split(new[] {"\t"}, StringSplitOptions.None);
+          if (vals.Length != 2)
+            continue;
+
+          var a = AddWordToVocab(vals[0]);
+          _vocab[a].Cn = int.Parse(vals[1]);
         }
         SortVocab();
       }
-      var fileInfo = new FileInfo(_trainFile);
-      _fileSize = fileInfo.Length;
     }
 
     // Reduces the vocabulary by removing infrequent tokens
@@ -377,7 +370,7 @@ namespace Word2Vec.Net
         using (var streamWriter = new StreamWriter(stream))
         {
           for (var i = 0; i < _vocabSize; i++)
-            streamWriter.WriteLine("{0} {1}", _vocab[i].Word, _vocab[i].Cn);
+            streamWriter.WriteLine($"{_vocab[i].Word}\t{_vocab[i].Cn}");
         }
       }
     }
@@ -445,17 +438,24 @@ namespace Word2Vec.Net
     public void TrainModel()
     {
       _startingAlpha = _alpha;
+      _fileSize = new FileInfo(_trainFile).Length;
+
       if (!string.IsNullOrEmpty(_readVocabFile))
         ReadVocab();
       else
         LearnVocabFromTrainFile();
+
       if (!string.IsNullOrEmpty(_saveVocabFile))
         SaveVocab();
+
       if (string.IsNullOrEmpty(_outputFile))
         return;
+
       InitNet();
+
       if (_negative > 0)
         InitUnigramTable();
+
       var parallelOptions = new ParallelOptions
       {
         MaxDegreeOfParallelism = _numThreads
