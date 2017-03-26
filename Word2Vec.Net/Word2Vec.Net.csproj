@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analytics\Distance.cs" />
-    <Compile Include="FileStreamExtensions.cs" />
     <Compile Include="Model\Comparer\VocubComparer.cs" />
     <Compile Include="Model\VocubWord.cs" />
     <Compile Include="Word2Vec.cs" />
