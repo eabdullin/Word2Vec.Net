@@ -41,15 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Distance.cs" />
-    <Compile Include="StringExtension.cs" />
-    <Compile Include="Utils\FileStreamExtensions.cs" />
-    <Compile Include="VocubWord.cs" />
+    <Compile Include="Analytics\Distance.cs" />
     <Compile Include="Word2Vec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Word2VecAnalysisBase.cs" />
+    <Compile Include="Analytics\Abstract\Word2VecAnalysisBase.cs" />
     <Compile Include="Word2VecBuilder.cs" />
-    <Compile Include="WordAnalogy.cs" />
+    <Compile Include="Analytics\WordAnalogy.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
