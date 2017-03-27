@@ -605,7 +605,7 @@ namespace Word2Vec.Net
                     continue;
                   if (f >= MaxExp)
                     continue;
-                  f = _expTable[(int)((f + MaxExp) * (ExpTableSize / MaxExp / 2))];
+                  f = _expTable[(int)((f + MaxExp) * (ExpTableSize / (float)MaxExp / 2))];
                   // 'g' is the gradient multiplied by the learning rate
                   g = (1 - _code[_vocabIndex[word]][d] - f) * _alpha;
                   // Propagate errors output -> hidden
@@ -643,7 +643,7 @@ namespace Word2Vec.Net
                   else if (f < MaxExp * -1)
                     g = (label - 0) * _alpha;
                   else
-                    g = (label - _expTable[(int)((f + MaxExp) * (ExpTableSize / MaxExp / 2))]) * _alpha;
+                    g = (label - _expTable[(int)((f + MaxExp) * (ExpTableSize / (float)MaxExp / 2))]) * _alpha;
                   for (c = 0; c < _layer1Size; c++)
                     neu1E[c] += g * _syn1Neg[c + l2];
                   for (c = 0; c < _layer1Size; c++)
@@ -696,7 +696,7 @@ namespace Word2Vec.Net
                       continue;
                     if (f >= MaxExp)
                       continue;
-                    f = _expTable[(int)((f + MaxExp) * (ExpTableSize / MaxExp / 2))];
+                    f = _expTable[(int)((f + MaxExp) * (ExpTableSize / (float)MaxExp / 2))];
                     // 'g' is the gradient multiplied by the learning rate
                     g = (1 - _code[_vocabIndex[word]][d] - f) * _alpha;
                     // Propagate errors output -> hidden
@@ -734,7 +734,7 @@ namespace Word2Vec.Net
                     else if (f < MaxExp * -1)
                       g = (label - 0) * _alpha;
                     else
-                      g = (label - _expTable[(int)((f + MaxExp) * (ExpTableSize / MaxExp / 2))]) *
+                      g = (label - _expTable[(int)((f + MaxExp) * (ExpTableSize / (float)MaxExp / 2))]) *
                           _alpha;
                     for (c = 0; c < _layer1Size; c++)
                       neu1E[c] += g * _syn1Neg[c + l2];
