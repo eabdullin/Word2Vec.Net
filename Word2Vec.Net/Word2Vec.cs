@@ -451,8 +451,8 @@ namespace Word2Vec.Net
 
     private class DoubleDictionary
     {
-      private Dictionary<string, long> _d1 = new Dictionary<string, long>();
-      private Dictionary<long, string> _d2 = new Dictionary<long, string>();
+      private readonly Dictionary<string, long> _d1 = new Dictionary<string, long>();
+      private readonly Dictionary<long, string> _d2 = new Dictionary<long, string>();
 
       public DoubleDictionary(IEnumerable<string> init)
       {
@@ -466,7 +466,7 @@ namespace Word2Vec.Net
 
       public long this[string index] => _d1.ContainsKey(index) ? _d1[index] : -1;
       public string this[long index] => _d2.ContainsKey(index) ? _d2[index] : string.Empty;
-      public long Size { get; private set; }
+      public long Size { get; }
     }
 
     private void TrainModelThreadStart(int id)
@@ -479,7 +479,6 @@ namespace Word2Vec.Net
       var localIter = _iter;
 
       var nextRandom = (ulong)id;
-      float g;
       var neu1 = new float[_layer1Size];
       var neu1E = new float[_layer1Size];
       var sum = _cn.Sum(x => x.Value);
@@ -569,6 +568,7 @@ namespace Word2Vec.Net
           float f;
           long target;
           long l2;
+          float g;
           if (_cbow > 0)
           {
             //train the cbow architecture
