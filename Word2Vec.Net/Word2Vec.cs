@@ -321,26 +321,19 @@ namespace Word2Vec.Net
       else
         LearnVocabFromTrainFile();
 
-      Console.Write($"{_cn.Count} > ");
       ReduceDictionary();
-      Console.WriteLine(_cn.Count);
 
       if (!string.IsNullOrEmpty(_saveVocabFile))
         SaveVocab();
 
       if (string.IsNullOrEmpty(_outputFile))
         return;
-      Console.Write("InitNet...");
-      InitNet();
-      Console.WriteLine("ok");
-      if (_negative > 0)
-      {
-        Console.Write("InitUnigram...");
-        InitUnigramTable();
-        Console.WriteLine("ok");
-      }
 
-      Console.Write("Training...");
+      InitNet();
+
+      if (_negative > 0)
+        InitUnigramTable();
+
       var parallelOptions = new ParallelOptions
       {
         MaxDegreeOfParallelism = _numThreads
@@ -349,9 +342,7 @@ namespace Word2Vec.Net
       var result = Parallel.For(0, _numThreads, parallelOptions, TrainModelThreadStart);
       if (!result.IsCompleted)
         throw new InvalidOperationException();
-      Console.WriteLine("ok");
-
-      Console.Write("Save...");
+      
       using (var fs = new FileStream(_outputFile, FileMode.Create, FileAccess.Write))
       using (var writer = new StreamWriter(fs, Encoding.UTF8))
       {
@@ -433,7 +424,6 @@ namespace Word2Vec.Net
         }
       }
       GC.Collect();
-      Console.WriteLine("ok");
     }
 
     private void ReduceDictionary()

@@ -38,13 +38,16 @@ namespace Word2Vec.UnitTest
       var distance = new Distance("faust1.bin"){ MinimumDistance = 0.99};
       var bestwords = distance.Search("Gott");
       Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Count == 356);
-      var top = bestwords.OrderByDescending(x => x.Value).Take(10).ToArray();
-      Console.WriteLine(top.First().Key);
+      var top1 = bestwords.OrderByDescending(x => x.Value).Take(10).ToArray();
+      Console.WriteLine(top1.First().Key);
 
       bestwords = distance.Search("ich");
       Assert.IsNotNull(bestwords);
-      Assert.IsTrue(bestwords.Count == 1);
+      var top2 = bestwords.OrderByDescending(x => x.Value).Take(10).ToArray();
+      Console.WriteLine(top2.First().Key);
+
+      var var = top1.Where((t, i) => t.Key != top2[i].Key).Count();
+      Assert.IsTrue(var < 5);
     }
 
     [TestMethod]
