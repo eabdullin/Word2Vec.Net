@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -764,7 +765,7 @@ namespace Word2Vec.Net
                                 {
                                     for (b = 0; b < _layer1Size; b++)
                                     {
-                                        bytes = string.Concat(_syn0[a*_layer1Size + b], " ").GetBytes();
+                                        bytes = string.Concat((_syn0[a*_layer1Size + b]).ToString(CultureInfo.InvariantCulture), " ").GetBytes();
                                         stream.Write(bytes, 0, bytes.Length);
                                     }
                                 }
