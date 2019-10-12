@@ -3,9 +3,10 @@
 
 implementation Word2Vec(https://code.google.com/p/word2vec/) for .Net framework
 
-#Getting Started
+# Getting Started
 
-##Using
+## Using
+
 ```c#
             var builder = Word2VecBuilder.Create();
 
@@ -49,8 +50,9 @@ OR
 		BestWord[] bestwords = distance.Search("some_word");
 ```
 
-##Information from Google word2vec:
-###Tools for computing distributed representtion of words
+## Information from Google word2vec:
+
+### Tools for computing distributed representtion of words
 
 We provide an implementation of the Continuous Bag-of-Words (CBOW) and the Skip-gram model (SG), as well as several demo scripts.
 
